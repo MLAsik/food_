@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Битва Еды</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--tg-theme-bg-color, #f4f4f5);
+      color: var(--tg-theme-text-color, #222);
+      margin: 0;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 95vh;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .header h2 { margin: 0 0 4px 0; font-size: 20px; }
+    .header p { margin: 0; opacity: 0.7; font-size: 13px; }
+
+    /* Располагаем карточки ГОРИЗОНТАЛЬНО в один ряд */
+    .cards-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .card {
+      flex: 1;
+      background: var(--tg-theme-secondary-bg-color, #ffffff);
+      border-radius: 14px;
+      padding: 10px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card:active {
+      transform: scale(0.95);
+    }
+
+    .card-img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      pointer-events: none; /* чтобы клик всегда попадал на карточку */
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      word-break: break-word;
+    }
+
+    .vs {
+      font-weight: 900;
+      color: #ff4757;
+      font-size: 16px;
+      padding: 0 4px;
+    }
+
+    .winner-box {
+      text-align: center;
+      display: none;
+      max-width: 300px;
+    }
+    .winner-img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .btn {
+      background: var(--tg-theme-button-color, #2481cc);
+      color: var(--tg-theme-button-text-color, #ffffff);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-view" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+    <div class="header">
+      <h2 id="stage-info">Этап 1</h2>
+      <p id="round-info">Раунд 1 из 10</p>
+    </div>
+
+    <div class="cards-container">
+      <div class="card" onclick="selectFood(0)">
+        <img id="img-0" class="card-img" src="" alt="Еда 1">
+        <div class="card-title" id="title-0">Загрузка...</div>
+      </div>
+
+      <div class="vs">VS</div>
+
+      <div class="card" onclick="selectFood(1)">
+        <img id="img-1" class="card-img" src="" alt="Еда 2">
+        <div class="card-title" id="title-1">Загрузка...</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="winner-view" class="winner-box">
+    <h2>🏆 Победитель Битвы!</h2>
+    <img id="winner-img" class="winner-img" src="" alt="Победитель">
+    <h3 id="winner-title" style="font-size: 22px; margin: 8px 0;"></h3>
+    <button class="btn" onclick="restartGame()">Начать заново</button>
+  </div>
+
+  <script>
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.expand();
+    }
+
+    const initialItems = [
+      { name: "Пицца", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80" },
+[03.09.2026 14:40] Никита: { name: "Бургер", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80" },
+      { name: "Суши", img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500&q=80" },
+      { name: "Шаурма", img: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=500&q=80" },
+      { name: "Рамен", img: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500&q=80" },
+      { name: "Паста", img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=500&q=80" },
+      { name: "Стейк", img: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=500&q=80" },
+      { name: "Наггетсы", img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=80" },
+      { name: "Тако", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=500&q=80" },
+      { name: "Хинкали", img: "https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?w=500&q=80" },
+      { name: "Картофель фри", img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&q=80" },
+      { name: "Блины", img: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&q=80" },
+      { name: "Мороженое", img: "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=500&q=80" },
+      { name: "Пончики", img: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=500&q=80" },
+      { name: "Круассан", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=500&q=80" },
+      { name: "Капкейк", img: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=500&q=80" },
+      { name: "Борщ", img: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=500&q=80" },
+      { name: "Пельмени", img: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?w=500&q=80" },
+      { name: "Сэндвич", img: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&q=80" },
+      { name: "Хот-дог", img: "https://images.unsplash.com/photo-1619740455993-9e612b1af08a?w=500&q=80" }
+    ];
+
+    let currentPool = [];
+    let nextStagePool = [];
+    let currentIndex = 0;
+    let stageCount = 1;
+
+    function initGame() {
+      currentPool = [...initialItems];
+      currentPool.sort(() => Math.random() - 0.5);
+      nextStagePool = [];
+      currentIndex = 0;
+      stageCount = 1;
+
+      document.getElementById("game-view").style.display = "flex";
+      document.getElementById("winner-view").style.display = "none";
+
+      renderRound();
+    }
+
+    function renderRound() {
+      const totalRoundsInStage = Math.floor(currentPool.length / 2);
+      const currentRound = Math.floor(currentIndex / 2) + 1;
+
+      document.getElementById("stage-info").innerText = Этап ${stageCount};
+      document.getElementById("round-info").innerText = Раунд ${currentRound} из ${totalRoundsInStage};
+
+      const item1 = currentPool[currentIndex];
+      const item2 = currentPool[currentIndex + 1];
+
+      document.getElementById("img-0").src = item1.img;
+      document.getElementById("title-0").innerText = item1.name;
+
+      document.getElementById("img-1").src = item2.img;
+      document.getElementById("title-1").innerText = item2.name;
+    }
+
+    function selectFood(selectedIndex) {
+      const chosenItem = currentPool[currentIndex + selectedIndex];
+      nextStagePool.push(chosenItem);
+
+      currentIndex += 2;
+
+      if (currentIndex >= currentPool.length - (currentPool.length % 2)) {
+        if (currentPool.length % 2 !== 0) {
+          nextStagePool.push(currentPool[currentPool.length - 1]);
+        }
+
+        if (nextStagePool.length === 1) {
+          showWinner(nextStagePool[0]);
+          return;
+        }
+
+        currentPool = [...nextStagePool];
+        nextStagePool = [];
+        currentIndex = 0;
+        stageCount++;
+      }
+
+      renderRound();
+    }
+[03.09.2026 14:40] Никита: function showWinner(winner) {
+      document.getElementById("game-view").style.display = "none";
+      document.getElementById("winner-view").style.display = "block";
+      document.getElementById("winner-img").src = winner.img;
+      document.getElementById("winner-title").innerText = winner.name;
+    }
+
+    function restartGame() {
+      initGame();
+    }
+
+    initGame();
+  </script>
+</body>
+</html>
