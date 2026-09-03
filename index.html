@@ -1,345 +1,371 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Битва сладостей</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Битва сладостей</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-  body {
-    margin: 0;
-    padding: 16px 16px 32px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--tg-theme-bg-color, #fff5f8);
-    color: var(--tg-theme-text-color, #2b2b2b);
-    min-height: 100vh;
-  }
+    body {
+      margin: 0;
+      padding: 16px 16px 32px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--tg-theme-bg-color, #fff5f8);
+      color: var(--tg-theme-text-color, #2b2b2b);
+      min-height: 100vh;
+    }
 
-  .screen { display: none; max-width: 460px; margin: 0 auto; }
-  .screen.active { display: block; }
+    .screen { display: none; max-width: 460px; margin: 0 auto; }
+    .screen.active { display: block; }
 
-  h1 { font-size: 22px; line-height: 1.3; margin: 24px 0 20px; text-align: center; }
-  .subtitle { text-align: center; opacity: .65; font-size: 14px; margin: -12px 0 20px; }
+    h1 { font-size: 22px; line-height: 1.3; margin: 24px 0 20px; text-align: center; }
+    .subtitle { text-align: center; opacity: .65; font-size: 14px; margin: -12px 0 20px; }
 
-  .game-card {
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    background: var(--tg-theme-secondary-bg-color, #fff);
-    box-shadow: 0 6px 20px rgba(214, 51, 108, .12);
-    margin-bottom: 16px;
-    cursor: pointer;
-    transition: transform .12s ease;
-  }
-  .game-card:active { transform: scale(.985); }
+    .game-card {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--tg-theme-secondary-bg-color, #fff);
+      box-shadow: 0 6px 20px rgba(214, 51, 108, .12);
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: transform .12s ease;
+    }
+    .game-card:active { transform: scale(.985); }
 
-  .game-card-media {
-    height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 62px;
-    background: linear-gradient(135deg, #ffd7e6, #ffe9c7);
-  }
-  .game-card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .game-card-body { padding: 14px 16px 16px; }
-  .game-card-body h3 { margin: 0 0 4px; font-size: 18px; }
-  .game-card-body p { margin: 0; font-size: 13px; opacity: .65; }
+    .game-card-media {
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 62px;
+      background: linear-gradient(135deg, #ffd7e6, #ffe9c7);
+    }
+    .game-card-media img { width: 100%; height: 100%; object-fit: cover; }
+    .game-card-body { padding: 14px 16px 16px; }
+    .game-card-body h3 { margin: 0 0 4px; font-size: 18px; }
+    .game-card-body p { margin: 0; font-size: 13px; opacity: .65; }
 
-  .game-card.locked { cursor: default; }
-  .game-card.locked .blurred { filter: blur(6px); opacity: .65; }
-  .soon-label {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    color: #fff;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, .35);
-    background: rgba(0, 0, 0, .12);
-    z-index: 2;
-  }
+    .game-card.locked { cursor: default; }
+    .game-card.locked .blurred { filter: blur(6px); opacity: .65; }
+    .soon-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, .35);
+      background: rgba(0, 0, 0, .12);
+      z-index: 2;
+    }
 
-  /* Хот-бар */
-  .hotbar {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    padding: 12px 0 14px;
-    background: var(--tg-theme-bg-color, #fff5f8);
-  }
-  .hotbar-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 8px;
-  }
-  .hotbar-stage { opacity: .6; font-weight: 500; }
-  .progress-track {
-    height: 8px;
-    border-radius: 99px;
-    background: rgba(214, 51, 108, .15);
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    width: 0;
-    border-radius: 99px;
-    background: linear-gradient(90deg, #ff7eb3, #ff4d88);
-    transition: width .3s ease;
-  }
+    /* Хот-бар */
+    .hotbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      padding: 12px 0 14px;
+      background: var(--tg-theme-bg-color, #fff5f8);
+    }
+    .hotbar-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .hotbar-stage { opacity: .6; font-weight: 500; }
+    .progress-track {
+      height: 8px;
+      border-radius: 99px;
+      background: rgba(214, 51, 108, .15);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #ff7eb3, #ff4d88);
+      transition: width .3s ease;
+    }
 
-  .vs-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 8px;
-  }
-  .sweet {
-    flex: 1 1 0;
-    min-width: 0;
-    border-radius: 18px;
-    background: var(--tg-theme-secondary-bg-color, #fff);
-    box-shadow: 0 6px 18px rgba(214, 51, 108, .12);
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform .12s ease;
-  }
-  .sweet:active { transform: scale(.95); }
-  .sweet-media {
-    height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 56px;
-    background: linear-gradient(135deg, #ffe3ee, #fff1d9);
-  }
-  .sweet-media img { width: 100%; height: 100%; object-fit: contain; padding: 8px; display: block; }
-  .sweet-name {
-    padding: 10px 8px 12px;
-    text-align: center;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.25;
-  }
-  .vs {
-    flex: 0 0 auto;
-    font-size: 15px;
-    font-weight: 900;
-    color: #ff4d88;
-  }
+    .vs-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .sweet {
+      flex: 1 1 0;
+      min-width: 0;
+      border-radius: 18px;
+      background: var(--tg-theme-secondary-bg-color, #fff);
+      box-shadow: 0 6px 18px rgba(214, 51, 108, .12);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .12s ease;
+    }
+    .sweet:active { transform: scale(.95); }
+    .sweet-media {
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 56px;
+      background: linear-gradient(135deg, #ffe3ee, #fff1d9);
+    }
+    .sweet-media img { width: 100%; height: 100%; object-fit: cover; }
+    .sweet-name {
+      padding: 10px 8px 12px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+    .vs {
+      flex: 0 0 auto;
+      font-size: 15px;
+      font-weight: 900;
+      color: #ff4d88;
+    }
+    .winner-media {
+      height: 220px;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 90px;
+      background: linear-gradient(135deg, #ffd7e6, #ffe9c7);
+      box-shadow: 0 8px 24px rgba(214, 51, 108, .16);
+    }
+    .winner-media img { width: 100%; height: 100%; object-fit: cover; }
+    .winner-name { text-align: center; font-size: 24px; font-weight: 800; margin: 16px 0 4px; }
 
-  .winner-media {
-    height: 220px;
-    border-radius: 20px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 90px;
-    background: linear-gradient(135deg, #ffd7e6, #ffe9c7);
-    box-shadow: 0 8px 24px rgba(214, 51, 108, .16);
-  }
-  .winner-media img { width: 100%; height: 100%; object-fit: contain; padding: 12px; display: block; }
-  .winner-name { text-align: center; font-size: 24px; font-weight: 800; margin: 16px 0 4px; }
-
-  .btn {
-    display: block;
-    width: 100%;
-    margin-top: 20px;
-    padding: 14px;
-    border: none;
-    border-radius: 14px;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--tg-theme-button-text-color, #fff);
-    background: var(--tg-theme-button-color, #ff4d88);
-    cursor: pointer;
-  }
-  .btn.secondary {
-    background: transparent;
-    color: var(--tg-theme-link-color, #ff4d88);
-    margin-top: 8px;
-  }
-</style>
+    .btn {
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--tg-theme-button-text-color, #fff);
+      background: var(--tg-theme-button-color, #ff4d88);
+      cursor: pointer;
+    }
+    .btn.secondary {
+      background: transparent;
+      color: var(--tg-theme-link-color, #ff4d88);
+      margin-top: 8px;
+    }
+  </style>
 </head>
 <body>
 
-<!-- Меню -->
-<section id="menu-screen" class="screen active">
-  <h1 id="greeting">Привет, Машулька кисулька, во что поиграем?</h1>
+  <!-- Меню -->
+  <section id="menu-screen" class="screen active">
+    <h1>Привет, Машулька кисулька, во что поиграем?</h1>
 
-  <div class="game-card" id="start-battle">
-    <div class="game-card-media">
-      <img src="images/menu-sweets.jpg" alt="Сладости" onerror="this.replaceWith(document.createTextNode('🍬🍫🧁'))">
-    </div>
-    <div class="game-card-body">
-      <h3>Выбери любимое</h3>
-      <p>12 сладостей, дуэли до последней победительницы</p>
-    </div>
-  </div>
-
-  <div class="game-card locked">
-    <div class="soon-label">Скоро!</div>
-    <div class="blurred">
-      <div class="game-card-media">🍕🍔🍟</div>
+    <div class="game-card" id="start-battle">
+      <div class="game-card-media">
+        <img src="images/menu-sweets.jpg" alt="Сладости" onerror="this.replaceWith(document.createTextNode('🍬🍫🧁'))">
+      </div>
       <div class="game-card-body">
-        <h3>Секретная игра</h3>
-        <p>Совсем скоро тут появится кое-что вкусное</p>
+        <h3>Выбери любимое</h3>
+        <p>12 сладостей, дуэли до последней победительницы</p>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- Игра -->
-<section id="game-screen" class="screen">
-  <div class="hotbar">
-    <div class="hotbar-top">
-      <span id="round-label">Раунд 1 / 11</span>
-      <span class="hotbar-stage" id="stage-label">Этап 1</span>
+    <div class="game-card locked">
+      <div class="soon-label">Скоро!</div>
+      <div class="blurred">
+        <div class="game-card-media">🍕🍔🍟</div>
+        <div class="game-card-body">
+          <h3>Секретная игра</h3>
+          <p>Совсем скоро тут появится кое-что вкусное</p>
+        </div>
+      </div>
     </div>
-    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-  </div>
+  </section>
 
-  <div class="vs-row">
-    <div class="sweet" id="sweet-0">
-      <div class="sweet-media" id="media-0"></div>
-      <div class="sweet-name" id="name-0"></div>
+  <!-- Игра -->
+  <section id="game-screen" class="screen">
+    <div class="hotbar">
+      <div class="hotbar-top">
+        <span id="round-label">Раунд 1 / 11</span>
+        <span class="hotbar-stage" id="stage-label">Этап 1</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
     </div>
-    <div class="vs">VS</div>
-    <div class="sweet" id="sweet-1">
-      <div class="sweet-media" id="media-1"></div>
-      <div class="sweet-name" id="name-1"></div>
+
+    <div class="vs-row">
+      <div class="sweet" id="sweet-0">
+        <div class="sweet-media" id="media-0"></div>
+        <div class="sweet-name" id="name-0"></div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="sweet" id="sweet-1">
+        <div class="sweet-media" id="media-1"></div>
+        <div class="sweet-name" id="name-1"></div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Победитель -->
-<section id="winner-screen" class="screen">
-  <h1>🏆 Победительница!</h1>
-  <div class="winner-media" id="winner-media"></div>
-  <div class="winner-name" id="winner-name"></div>
-  <p class="subtitle" style="margin-top:8px">Вот она — самая любимая сладость</p>
-  <button class="btn" id="play-again">Сыграть ещё раз</button>
-  <button class="btn secondary" id="back-to-menu">В меню</button>
-</section>
+  <!-- Победитель -->
+  <section id="winner-screen" class="screen">
+    <h1>🏆 Победительница!</h1>
+    <div class="winner-media" id="winner-media"></div>
+    <div class="winner-name" id="winner-name"></div>
+    <p class="subtitle" style="margin-top:8px">Вот она — самая любимая сладость</p>
+    <button class="btn" id="play-again">Сыграть ещё раз</button>
+    <button class="btn secondary" id="back-to-menu">В меню</button>
+  </section>
 
-<script>
-  const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  <script>
+    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 
-  const SWEETS = [
-    { name: "Киндер",               file: "kinder.jpg",          emoji: "🍫" },
-    { name: "КитКат",               file: "kitkat.jpg",          emoji: "🍫" },
-    { name: "Белый шоколад",        file: "white-chocolate.jpg", emoji: "🤍" },
-    { name: "Милки Вэй",            file: "milkyway.jpg",        emoji: "🌌" },
-    { name: "Твикс",                file: "twix.jpg",            emoji: "🍪" },
-    { name: "Зефир",                file: "zefir.jpg",           emoji: "☁️" },
-    { name: "Ириски",               file: "iriski.jpg",          emoji: "🍬" },
-    { name: "Молочный шоколад",     file: "milk-chocolate.jpg",  emoji: "🍫" },
-    { name: "Апельсиновые сосалки", file: "orange-lollipop.jpg", emoji: "🍊" },
-    { name: "Солёная карамель",     file: "salted-caramel.jpg",  emoji: "🍮" },
-    { name: "Булочки с вишней",     file: "cherry-buns.jpg",     emoji: "🍒" },
-    { name: "Сникерс белый",        file: "snickers-white.jpg",  emoji: "🥜" }
-  ];
+    const SWEETS = [
+      { name: "Киндер",               file: "kinder.jpg",          emoji: "🍫" },
+      { name: "КитКат",               file: "kitkat.jpg",          emoji: "🍫" },
+      { name: "Белый шоколад",        file: "white-chocolate.jpg", emoji: "🤍" },
+      { name: "Милки Вэй",            file: "milkyway.jpg",        emoji: "🌌" },
+      { name: "Твикс",                file: "twix.jpg",            emoji: "🍪" },
+      { name: "Зефир",                file: "zefir.jpg",           emoji: "☁️" },
+      { name: "Ириски",               file: "iriski.jpg",          emoji: "🍬" },
+      { name: "Молочный шоколад",     file: "milk-chocolate.jpg",  emoji: "🍫" },
+      { name: "Апельсиновые сосалки", file: "orange-lollipop.jpg", emoji: "🍊" },
+      { name: "Солёная карамель",     file: "salted-caramel.jpg",  emoji: "🍮" },
+      { name: "Булочки с вишней",     file: "cherry-buns.jpg",     emoji: "🍒" },
+      { name: "Сникерс белый",        file: "snickers-white.jpg",  emoji: "🥜" }
+    ];
 
-  const TOTAL_ROUNDS = SWEETS.length - 1;
+    const TOTAL_ROUNDS = SWEETS.length - 1;
 
-  let pool = [];
-  let nextPool = [];
-  let cursor = 0;
-  let stage = 1;
-  let roundNumber = 1;
+    let pool = [];
+    let nextPool = [];
+    let cursor = 0;
+    let stage = 1;
+    let roundNumber = 1;
 
-  function showScreen(id) {
-    document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
-    window.scrollTo(0, 0);
-  }
+    // Переменные для сбора аналитики
+    let gameStartTime = null;
+    let roundChoices = [];
 
-  function shuffle(items) {
-    const copy = items.slice();
-    for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
+      window.scrollTo(0, 0);
     }
-    return copy;
-  }
 
-  function fillMedia(container, sweet, fontSize) {
-    container.textContent = "";
-    const img = document.createElement("img");
-    img.src = "images/" + sweet.file;
-    img.alt = sweet.name;
-    img.onerror = () => {
-      container.textContent = sweet.emoji;
-      if (fontSize) container.style.fontSize = fontSize;
-    };
-    container.appendChild(img);
-  }
+    function shuffle(items) {
+      const copy = items.slice();
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
 
-  function startBattle() {
-    pool = shuffle(SWEETS);
-    nextPool = [];
-    cursor = 0;
-    stage = 1;
-    roundNumber = 1;
-    showScreen("game-screen");
-    renderRound();
-  }
+    function fillMedia(container, sweet, fontSize) {
+      container.textContent = "";
+      const img = document.createElement("img");
+      img.src = "images/" + sweet.file;
+      img.alt = sweet.name;
+      img.onerror = () => {
+        container.textContent = sweet.emoji;
+        if (fontSize) container.style.fontSize = fontSize;
+      };
+      container.appendChild(img);
+    }
 
-  function renderRound() {
-    document.getElementById("round-label").textContent = `Раунд ${roundNumber} / ${TOTAL_ROUNDS}`;
-    document.getElementById("stage-label").textContent = `Этап ${stage}`;
-    document.getElementById("progress-fill").style.width = ((roundNumber - 1) / TOTAL_ROUNDS) * 100 + "%";
-
-    [0, 1].forEach(i => {
-      const sweet = pool[cursor + i];
-      fillMedia(document.getElementById("media-" + i), sweet);
-      document.getElementById("name-" + i).textContent = sweet.name;
-    });
-  }
-
-  function pick(side) {
-    nextPool.push(pool[cursor + side]);
-    cursor += 2;
-
-    if (cursor >= pool.length - 1) {
-      if (cursor < pool.length) nextPool.push(pool[pool.length - 1]);
-      if (nextPool.length === 1) { showWinner(nextPool[0]); return; }
-      pool = nextPool;
+    function startBattle() {
+      pool = shuffle(SWEETS);
       nextPool = [];
       cursor = 0;
-      stage += 1;
+      stage = 1;
+      roundNumber = 1;
+      roundChoices = [];
+      gameStartTime = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+      showScreen("game-screen");
+      renderRound();
     }
 
-    roundNumber += 1;
-    if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
-    renderRound();
-  }
+    function renderRound() {
+      document.getElementById("round-label").textContent = Раунд ${roundNumber} / ${TOTAL_ROUNDS};
+      document.getElementById("stage-label").textContent = Этап ${stage};
+      document.getElementById("progress-fill").style.width = ((roundNumber - 1) / TOTAL_ROUNDS) * 100 + "%";
 
-  function showWinner(sweet) {
-    fillMedia(document.getElementById("winner-media"), sweet, "90px");
-    document.getElementById("winner-name").textContent = sweet.name;
-    showScreen("winner-screen");
-    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
-  }
+      [0, 1].forEach(i => {
+        const sweet = pool[cursor + i];
+        fillMedia(document.getElementById("media-" + i), sweet);
+        document.getElementById("name-" + i).textContent = sweet.name;
+      });
+    }
 
-  document.getElementById("start-battle").addEventListener("click", startBattle);
-  document.getElementById("sweet-0").addEventListener("click", () => pick(0));
-  document.getElementById("sweet-1").addEventListener("click", () => pick(1));
-  document.getElementById("play-again").addEventListener("click", startBattle);
-  document.getElementById("back-to-menu").addEventListener("click", () => showScreen("menu-screen"));
+    function pick(side) {
+      const option1 = pool[cursor].name;
+      const option2 = pool[cursor + 1].name;
+      const chosen = pool[cursor + side].name;
 
-  if (tg) {
-    tg.ready();
-    tg.expand();
-  }
-</script>
+      // Логируем результат раунда
+      roundChoices.push(${option1} vs ${option2} (выбрано: ${chosen}));
+
+      nextPool.push(pool[cursor + side]);
+      cursor += 2;
+
+      if (cursor >= pool.length - 1) {
+        if (cursor < pool.length) nextPool.push(pool[pool.length - 1]);
+        if (nextPool.length === 1) {
+          showWinner(nextPool[0]);
+          return;
+        }
+        pool = nextPool;
+        nextPool = [];
+        cursor = 0;
+        stage += 1;
+      }
+
+      roundNumber += 1;
+      if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
+      renderRound();
+    }
+
+    function showWinner(sweet) {
+      fillMedia(document.getElementById("winner-media"), sweet, "90px");
+      document.getElementById("winner-name").textContent = sweet.name;
+      showScreen("winner-screen");
+      if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+
+      // Отправляем данные боту при завершении игры
+      if (tg && tg.sendData) {
+        const gameResult = {
+          startTime: gameStartTime,
+          winner: sweet.name,
+          rounds: roundChoices
+        };
+        tg.sendData(JSON.stringify(gameResult));
+      }
+    }
+
+    document.getElementById("start-battle").addEventListener("click", startBattle);
+    document.getElementById("sweet-0").addEventListener("click", () => pick(0));
+    document.getElementById("sweet-1").addEventListener("click", () => pick(1));
+    document.getElementById("play-again").addEventListener("click", startBattle);
+    document.getElementById("back-to-menu").addEventListener("click", () => showScreen("menu-screen"));
+
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+  </script>
 </body>
 </html>
