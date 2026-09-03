@@ -3,94 +3,158 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Битва Еды</title>
+  <title>Битва Сладостей</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--tg-theme-bg-color, #f4f4f5);
       color: var(--tg-theme-text-color, #222);
       margin: 0;
-      padding: 12px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 95vh;
+      min-height: 90vh;
     }
-    .header {
+
+    /* Приветственный экран */
+    .welcome-box {
       text-align: center;
+      max-width: 320px;
+    }
+    .welcome-box h2 {
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    /* Экран выбора игр */
+    .menu-box {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 340px;
+    }
+    .menu-box h2 {
+      margin-bottom: 8px;
+      font-size: 20px;
+      text-align: center;
+    }
+
+    .game-card {
+      width: 100%;
+      background: var(--tg-theme-secondary-bg-color, #ffffff);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.1s ease;
+    }
+    .game-card:active { transform: scale(0.98); }
+    .game-card h3 { margin: 0 0 6px 0; font-size: 18px; }
+    .game-card p { margin: 0; font-size: 13px; opacity: 0.7; }
+
+    /* Заблюренная карточка */
+    .game-card.disabled {
+      cursor: not-allowed;
+    }
+    .game-card.disabled .card-content {
+      filter: blur(4px);
+      opacity: 0.5;
+    }
+    .badge-soon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #ff4757;
+      color: white;
+      font-weight: bold;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 2;
+    }
+
+    /* Прогресс-бар */
+    .progress-container {
+      width: 100%;
+      max-width: 400px;
+      background-color: #e0e0e0;
+      border-radius: 10px;
+      height: 10px;
+      overflow: hidden;
       margin-bottom: 16px;
     }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: var(--tg-theme-button-color, #2481cc);
+      transition: width 0.3s ease;
+    }
+
+    .header { text-align: center; margin-bottom: 16px; }
     .header h2 { margin: 0 0 4px 0; font-size: 20px; }
     .header p { margin: 0; opacity: 0.7; font-size: 13px; }
 
-    /* Располагаем карточки ГОРИЗОНТАЛЬНО в один ряд */
     .cards-container {
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
       width: 100%;
-      max-width: 450px;
+      max-width: 400px;
     }
 
     .card {
       flex: 1;
       background: var(--tg-theme-secondary-bg-color, #ffffff);
-      border-radius: 14px;
-      padding: 10px;
+      border-radius: 16px;
+      padding: 12px 8px;
       text-align: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       cursor: pointer;
-      transition: transform 0.1s ease, box-shadow 0.1s ease;
       user-select: none;
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: transform 0.1s ease;
     }
-    .card:active {
-      transform: scale(0.95);
-    }
+    .card:active { transform: scale(0.95); }
 
-    .card-img {
+    .card-img-wrapper {
       width: 100%;
       height: 120px;
-      object-fit: cover;
-      border-radius: 10px;
+      border-radius: 12px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-bottom: 8px;
-      pointer-events: none; /* чтобы клик всегда попадал на карточку */
+      overflow: hidden;
     }
 
-    .card-title {
-      font-size: 15px;
-      font-weight: 600;
-      word-break: break-word;
-    }
-
-    .vs {
-      font-weight: 900;
-      color: #ff4757;
-      font-size: 16px;
-      padding: 0 4px;
-    }
-
-    .winner-box {
-      text-align: center;
-      display: none;
-      max-width: 300px;
-    }
-    .winner-img {
+    .card-img-wrapper img {
       width: 100%;
-      max-height: 200px;
+      height: 100%;
       object-fit: cover;
-      border-radius: 14px;
-      margin: 12px 0;
     }
+
+    .card-title { font-size: 15px; font-weight: 600; }
+[03.09.2026 17:27] Никита: .vs { font-weight: 900; color: #ff4757; font-size: 16px; }
+
+    .winner-box { text-align: center; display: none; max-width: 300px; }
+    .winner-box img { width: 100%; height: 180px; border-radius: 16px; object-fit: cover; }
+
     .btn {
       background: var(--tg-theme-button-color, #2481cc);
       color: var(--tg-theme-button-text-color, #ffffff);
@@ -100,65 +164,100 @@
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
+      margin-top: 12px;
     }
   </style>
 </head>
 <body>
 
-  <div id="game-view" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+  <!-- Экран 1: Приветствие -->
+  <div id="welcome-view" class="welcome-box">
+    <h2>Привет Машулька кисулька! Ниже кнопка начать игру.</h2>
+    <button class="btn" onclick="showMenu()">Начать игру</button>
+  </div>
+
+  <!-- Экран 2: Выбор режима -->
+  <div id="menu-view" class="menu-box">
+    <h2>Выбери режим</h2>
+
+    <div class="game-card" onclick="startBattle()">
+      <div class="card-content">
+        <h3>🍬 Выбери любимое</h3>
+        <p>Битва сладостей на выбывание</p>
+      </div>
+    </div>
+
+    <div class="game-card disabled">
+      <div class="badge-soon">Скоро!</div>
+      <div class="card-content">
+        <h3>🍕 Битва Фастфуда</h3>
+        <p>Сражение пиццы, бургеров и суши</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Экран 3: Игровой процесс -->
+  <div id="game-view" style="width: 100%; display: none; flex-direction: column; align-items: center;">
+    <div class="progress-container">
+      <div id="progress-bar" class="progress-bar"></div>
+    </div>
+
     <div class="header">
       <h2 id="stage-info">Этап 1</h2>
       <p id="round-info">Раунд 1 из 10</p>
     </div>
 
     <div class="cards-container">
-      <div class="card" onclick="selectFood(0)">
-        <img id="img-0" class="card-img" src="" alt="Еда 1">
-        <div class="card-title" id="title-0">Загрузка...</div>
+      <div class="card" id="card-0">
+        <div class="card-img-wrapper">
+          <img id="img-0" src="" alt="Сладость 1">
+        </div>
+        <div class="card-title" id="title-0">...</div>
       </div>
 
       <div class="vs">VS</div>
 
-      <div class="card" onclick="selectFood(1)">
-        <img id="img-1" class="card-img" src="" alt="Еда 2">
-        <div class="card-title" id="title-1">Загрузка...</div>
+      <div class="card" id="card-1">
+        <div class="card-img-wrapper">
+          <img id="img-1" src="" alt="Сладость 2">
+        </div>
+        <div class="card-title" id="title-1">...</div>
       </div>
     </div>
   </div>
 
+  <!-- Экран 4: Победитель -->
   <div id="winner-view" class="winner-box">
-    <h2>🏆 Победитель Битвы!</h2>
-    <img id="winner-img" class="winner-img" src="" alt="Победитель">
+    <h2>🏆 Победитель!</h2>
+    <div class="card-img-wrapper" style="height: 180px;">
+      <img id="winner-img" src="" alt="Победитель">
+    </div>
     <h3 id="winner-title" style="font-size: 22px; margin: 8px 0;"></h3>
-    <button class="btn" onclick="restartGame()">Начать заново</button>
+    <button class="btn" onclick="showMenu()">В главное меню</button>
   </div>
 
   <script>
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.expand();
-    }
-
     const initialItems = [
-      { name: "Пицца", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80" },
-[03.09.2026 14:40] Никита: { name: "Бургер", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80" },
-      { name: "Суши", img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500&q=80" },
-      { name: "Шаурма", img: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=500&q=80" },
-      { name: "Рамен", img: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500&q=80" },
-      { name: "Паста", img: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=500&q=80" },
-      { name: "Стейк", img: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=500&q=80" },
-      { name: "Наггетсы", img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=80" },
-      { name: "Тако", img: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=500&q=80" },
-      { name: "Хинкали", img: "https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?w=500&q=80" },
-      { name: "Картофель фри", img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&q=80" },
-      { name: "Блины", img: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&q=80" },
-      { name: "Мороженое", img: "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=500&q=80" },
-      { name: "Пончики", img: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=500&q=80" },
-      { name: "Круассан", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=500&q=80" },
-      { name: "Капкейк", img: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=500&q=80" },
-      { name: "Борщ", img: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=500&q=80" },
-      { name: "Пельмени", img: "https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?w=500&q=80" },
-      { name: "Сэндвич", img: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&q=80" },
-      { name: "Хот-дог", img: "https://images.unsplash.com/photo-1619740455993-9e612b1af08a?w=500&q=80" }
+      { name: "Киндер", img: "https://images.unsplash.com/photo-1582293041079-7814c2f12063?w=500&auto=format&fit=crop" },
+      { name: "Киткат", img: "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=500&auto=format&fit=crop" },
+      { name: "Белый шоколад", img: "https://images.unsplash.com/photo-1548848221-0c2e497ed557?w=500&auto=format&fit=crop" },
+      { name: "Милкивей", img: "https://images.unsplash.com/photo-1582293041079-7814c2f12063?w=500&auto=format&fit=crop" },
+      { name: "Твикс", img: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=500&auto=format&fit=crop" },
+      { name: "Зефир", img: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=500&auto=format&fit=crop" },
+      { name: "Ириски", img: "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=500&auto=format&fit=crop" },
+      { name: "Молочный шоколад", img: "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=500&auto=format&fit=crop" },
+      { name: "Апельсиновые сосалки", img: "https://images.unsplash.com/photo-1575224300306-1b8da36134ec?w=500&auto=format&fit=crop" },
+      { name: "Солёная карамель", img: "https://images.unsplash.com/photo-1581798459219-318e76aecc7b?w=500&auto=format&fit=crop" },
+[03.09.2026 17:27] Никита: { name: "Булочки с вишней", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop" },
+      { name: "Сникерс белый", img: "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=500&auto=format&fit=crop" },
+      { name: "Мармеладные червячки", img: "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=500&auto=format&fit=crop" },
+      { name: "M&M's", img: "https://images.unsplash.com/photo-1581798459219-318e76aecc7b?w=500&auto=format&fit=crop" },
+      { name: "Баунти", img: "https://images.unsplash.com/photo-1548848221-0c2e497ed557?w=500&auto=format&fit=crop" },
+      { name: "Марс", img: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=500&auto=format&fit=crop" },
+      { name: "Чупа-чупс", img: "https://images.unsplash.com/photo-1575224300306-1b8da36134ec?w=500&auto=format&fit=crop" },
+      { name: "Шоколадный суфле", img: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=500&auto=format&fit=crop" },
+      { name: "Орео", img: "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=500&auto=format&fit=crop" },
+      { name: "Эклер", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop" }
     ];
 
     let currentPool = [];
@@ -166,15 +265,22 @@
     let currentIndex = 0;
     let stageCount = 1;
 
-    function initGame() {
+    function showMenu() {
+      document.getElementById("welcome-view").style.display = "none";
+      document.getElementById("game-view").style.display = "none";
+      document.getElementById("winner-view").style.display = "none";
+      document.getElementById("menu-view").style.display = "flex";
+    }
+
+    function startBattle() {
       currentPool = [...initialItems];
       currentPool.sort(() => Math.random() - 0.5);
       nextStagePool = [];
       currentIndex = 0;
       stageCount = 1;
 
+      document.getElementById("menu-view").style.display = "none";
       document.getElementById("game-view").style.display = "flex";
-      document.getElementById("winner-view").style.display = "none";
 
       renderRound();
     }
@@ -185,6 +291,9 @@
 
       document.getElementById("stage-info").innerText = Этап ${stageCount};
       document.getElementById("round-info").innerText = Раунд ${currentRound} из ${totalRoundsInStage};
+
+      const progressPercent = ((currentRound - 1) / totalRoundsInStage) * 100;
+      document.getElementById("progress-bar").style.width = ${progressPercent}%;
 
       const item1 = currentPool[currentIndex];
       const item2 = currentPool[currentIndex + 1];
@@ -220,18 +329,21 @@
 
       renderRound();
     }
-[03.09.2026 14:40] Никита: function showWinner(winner) {
+
+    function showWinner(winner) {
       document.getElementById("game-view").style.display = "none";
       document.getElementById("winner-view").style.display = "block";
       document.getElementById("winner-img").src = winner.img;
       document.getElementById("winner-title").innerText = winner.name;
     }
 
-    function restartGame() {
-      initGame();
-    }
-
-    initGame();
+    document.getElementById("card-0").addEventListener("click", function() { selectFood(0); });
+    document.getElementById("card-1").addEventListener("click", function() { selectFood(1); });
+[03.09.2026 17:27] Никита: window.onload = function() {
+      if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.expand();
+      }
+    };
   </script>
 </body>
 </html>
