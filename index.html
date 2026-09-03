@@ -1,349 +1,345 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Битва Сладостей</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--tg-theme-bg-color, #f4f4f5);
-      color: var(--tg-theme-text-color, #222);
-      margin: 0;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 90vh;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Битва сладостей</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-    /* Приветственный экран */
-    .welcome-box {
-      text-align: center;
-      max-width: 320px;
-    }
-    .welcome-box h2 {
-      font-size: 22px;
-      margin-bottom: 12px;
-    }
+  body {
+    margin: 0;
+    padding: 16px 16px 32px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--tg-theme-bg-color, #fff5f8);
+    color: var(--tg-theme-text-color, #2b2b2b);
+    min-height: 100vh;
+  }
 
-    /* Экран выбора игр */
-    .menu-box {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      width: 100%;
-      max-width: 340px;
-    }
-    .menu-box h2 {
-      margin-bottom: 8px;
-      font-size: 20px;
-      text-align: center;
-    }
+  .screen { display: none; max-width: 460px; margin: 0 auto; }
+  .screen.active { display: block; }
 
-    .game-card {
-      width: 100%;
-      background: var(--tg-theme-secondary-bg-color, #ffffff);
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.1s ease;
-    }
-    .game-card:active { transform: scale(0.98); }
-    .game-card h3 { margin: 0 0 6px 0; font-size: 18px; }
-    .game-card p { margin: 0; font-size: 13px; opacity: 0.7; }
+  h1 { font-size: 22px; line-height: 1.3; margin: 24px 0 20px; text-align: center; }
+  .subtitle { text-align: center; opacity: .65; font-size: 14px; margin: -12px 0 20px; }
 
-    /* Заблюренная карточка */
-    .game-card.disabled {
-      cursor: not-allowed;
-    }
-    .game-card.disabled .card-content {
-      filter: blur(4px);
-      opacity: 0.5;
-    }
-    .badge-soon {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #ff4757;
-      color: white;
-      font-weight: bold;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      z-index: 2;
-    }
+  .game-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--tg-theme-secondary-bg-color, #fff);
+    box-shadow: 0 6px 20px rgba(214, 51, 108, .12);
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: transform .12s ease;
+  }
+  .game-card:active { transform: scale(.985); }
 
-    /* Прогресс-бар */
-    .progress-container {
-      width: 100%;
-      max-width: 400px;
-      background-color: #e0e0e0;
-      border-radius: 10px;
-      height: 10px;
-      overflow: hidden;
-      margin-bottom: 16px;
-    }
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background-color: var(--tg-theme-button-color, #2481cc);
-      transition: width 0.3s ease;
-    }
+  .game-card-media {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 62px;
+    background: linear-gradient(135deg, #ffd7e6, #ffe9c7);
+  }
+  .game-card-media img { width: 100%; height: 100%; object-fit: cover; }
+  .game-card-body { padding: 14px 16px 16px; }
+  .game-card-body h3 { margin: 0 0 4px; font-size: 18px; }
+  .game-card-body p { margin: 0; font-size: 13px; opacity: .65; }
 
-    .header { text-align: center; margin-bottom: 16px; }
-    .header h2 { margin: 0 0 4px 0; font-size: 20px; }
-    .header p { margin: 0; opacity: 0.7; font-size: 13px; }
+  .game-card.locked { cursor: default; }
+  .game-card.locked .blurred { filter: blur(6px); opacity: .65; }
+  .soon-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #fff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, .35);
+    background: rgba(0, 0, 0, .12);
+    z-index: 2;
+  }
 
-    .cards-container {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      width: 100%;
-      max-width: 400px;
-    }
+  /* Хот-бар */
+  .hotbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    padding: 12px 0 14px;
+    background: var(--tg-theme-bg-color, #fff5f8);
+  }
+  .hotbar-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .hotbar-stage { opacity: .6; font-weight: 500; }
+  .progress-track {
+    height: 8px;
+    border-radius: 99px;
+    background: rgba(214, 51, 108, .15);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #ff7eb3, #ff4d88);
+    transition: width .3s ease;
+  }
 
-    .card {
-      flex: 1;
-      background: var(--tg-theme-secondary-bg-color, #ffffff);
-      border-radius: 16px;
-      padding: 12px 8px;
-      text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      cursor: pointer;
-      user-select: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: transform 0.1s ease;
-    }
-    .card:active { transform: scale(0.95); }
+  .vs-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .sweet {
+    flex: 1 1 0;
+    min-width: 0;
+    border-radius: 18px;
+    background: var(--tg-theme-secondary-bg-color, #fff);
+    box-shadow: 0 6px 18px rgba(214, 51, 108, .12);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .12s ease;
+  }
+  .sweet:active { transform: scale(.95); }
+  .sweet-media {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    background: linear-gradient(135deg, #ffe3ee, #fff1d9);
+  }
+  .sweet-media img { width: 100%; height: 100%; object-fit: cover; }
+  .sweet-name {
+    padding: 10px 8px 12px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .vs {
+    flex: 0 0 auto;
+    font-size: 15px;
+    font-weight: 900;
+    color: #ff4d88;
+  }
 
-    .card-img-wrapper {
-      width: 100%;
-      height: 120px;
-      border-radius: 12px;
-      background: #f0f0f0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 8px;
-      overflow: hidden;
-    }
+  .winner-media {
+    height: 220px;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 90px;
+    background: linear-gradient(135deg, #ffd7e6, #ffe9c7);
+    box-shadow: 0 8px 24px rgba(214, 51, 108, .16);
+  }
+  .winner-media img { width: 100%; height: 100%; object-fit: cover; }
+  .winner-name { text-align: center; font-size: 24px; font-weight: 800; margin: 16px 0 4px; }
 
-    .card-img-wrapper img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .card-title { font-size: 15px; font-weight: 600; }
-[03.09.2026 17:27] Никита: .vs { font-weight: 900; color: #ff4757; font-size: 16px; }
-
-    .winner-box { text-align: center; display: none; max-width: 300px; }
-    .winner-box img { width: 100%; height: 180px; border-radius: 16px; object-fit: cover; }
-
-    .btn {
-      background: var(--tg-theme-button-color, #2481cc);
-      color: var(--tg-theme-button-text-color, #ffffff);
-      border: none;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 12px;
-    }
-  </style>
+  .btn {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--tg-theme-button-text-color, #fff);
+    background: var(--tg-theme-button-color, #ff4d88);
+    cursor: pointer;
+  }
+  .btn.secondary {
+    background: transparent;
+    color: var(--tg-theme-link-color, #ff4d88);
+    margin-top: 8px;
+  }
+</style>
 </head>
 <body>
 
-  <!-- Экран 1: Приветствие -->
-  <div id="welcome-view" class="welcome-box">
-    <h2>Привет Машулька кисулька! Ниже кнопка начать игру.</h2>
-    <button class="btn" onclick="showMenu()">Начать игру</button>
-  </div>
+<!-- Меню -->
+<section id="menu-screen" class="screen active">
+  <h1 id="greeting">Привет, Машулька кисулька, во что поиграем?</h1>
 
-  <!-- Экран 2: Выбор режима -->
-  <div id="menu-view" class="menu-box">
-    <h2>Выбери режим</h2>
-
-    <div class="game-card" onclick="startBattle()">
-      <div class="card-content">
-        <h3>🍬 Выбери любимое</h3>
-        <p>Битва сладостей на выбывание</p>
-      </div>
+  <div class="game-card" id="start-battle">
+    <div class="game-card-media">
+      <img src="images/menu-sweets.jpg" alt="Сладости" onerror="this.replaceWith(document.createTextNode('🍬🍫🧁'))">
     </div>
-
-    <div class="game-card disabled">
-      <div class="badge-soon">Скоро!</div>
-      <div class="card-content">
-        <h3>🍕 Битва Фастфуда</h3>
-        <p>Сражение пиццы, бургеров и суши</p>
-      </div>
+    <div class="game-card-body">
+      <h3>Выбери любимое</h3>
+      <p>12 сладостей, дуэли до последней победительницы</p>
     </div>
   </div>
 
-  <!-- Экран 3: Игровой процесс -->
-  <div id="game-view" style="width: 100%; display: none; flex-direction: column; align-items: center;">
-    <div class="progress-container">
-      <div id="progress-bar" class="progress-bar"></div>
-    </div>
-
-    <div class="header">
-      <h2 id="stage-info">Этап 1</h2>
-      <p id="round-info">Раунд 1 из 10</p>
-    </div>
-
-    <div class="cards-container">
-      <div class="card" id="card-0">
-        <div class="card-img-wrapper">
-          <img id="img-0" src="" alt="Сладость 1">
-        </div>
-        <div class="card-title" id="title-0">...</div>
-      </div>
-
-      <div class="vs">VS</div>
-
-      <div class="card" id="card-1">
-        <div class="card-img-wrapper">
-          <img id="img-1" src="" alt="Сладость 2">
-        </div>
-        <div class="card-title" id="title-1">...</div>
+  <div class="game-card locked">
+    <div class="soon-label">Скоро!</div>
+    <div class="blurred">
+      <div class="game-card-media">🍕🍔🍟</div>
+      <div class="game-card-body">
+        <h3>Секретная игра</h3>
+        <p>Совсем скоро тут появится кое-что вкусное</p>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- Экран 4: Победитель -->
-  <div id="winner-view" class="winner-box">
-    <h2>🏆 Победитель!</h2>
-    <div class="card-img-wrapper" style="height: 180px;">
-      <img id="winner-img" src="" alt="Победитель">
+<!-- Игра -->
+<section id="game-screen" class="screen">
+  <div class="hotbar">
+    <div class="hotbar-top">
+      <span id="round-label">Раунд 1 / 11</span>
+      <span class="hotbar-stage" id="stage-label">Этап 1</span>
     </div>
-    <h3 id="winner-title" style="font-size: 22px; margin: 8px 0;"></h3>
-    <button class="btn" onclick="showMenu()">В главное меню</button>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
   </div>
 
-  <script>
-    const initialItems = [
-      { name: "Киндер", img: "https://images.unsplash.com/photo-1582293041079-7814c2f12063?w=500&auto=format&fit=crop" },
-      { name: "Киткат", img: "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=500&auto=format&fit=crop" },
-      { name: "Белый шоколад", img: "https://images.unsplash.com/photo-1548848221-0c2e497ed557?w=500&auto=format&fit=crop" },
-      { name: "Милкивей", img: "https://images.unsplash.com/photo-1582293041079-7814c2f12063?w=500&auto=format&fit=crop" },
-      { name: "Твикс", img: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=500&auto=format&fit=crop" },
-      { name: "Зефир", img: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=500&auto=format&fit=crop" },
-      { name: "Ириски", img: "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=500&auto=format&fit=crop" },
-      { name: "Молочный шоколад", img: "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=500&auto=format&fit=crop" },
-      { name: "Апельсиновые сосалки", img: "https://images.unsplash.com/photo-1575224300306-1b8da36134ec?w=500&auto=format&fit=crop" },
-      { name: "Солёная карамель", img: "https://images.unsplash.com/photo-1581798459219-318e76aecc7b?w=500&auto=format&fit=crop" },
-[03.09.2026 17:27] Никита: { name: "Булочки с вишней", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop" },
-      { name: "Сникерс белый", img: "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=500&auto=format&fit=crop" },
-      { name: "Мармеладные червячки", img: "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=500&auto=format&fit=crop" },
-      { name: "M&M's", img: "https://images.unsplash.com/photo-1581798459219-318e76aecc7b?w=500&auto=format&fit=crop" },
-      { name: "Баунти", img: "https://images.unsplash.com/photo-1548848221-0c2e497ed557?w=500&auto=format&fit=crop" },
-      { name: "Марс", img: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=500&auto=format&fit=crop" },
-      { name: "Чупа-чупс", img: "https://images.unsplash.com/photo-1575224300306-1b8da36134ec?w=500&auto=format&fit=crop" },
-      { name: "Шоколадный суфле", img: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=500&auto=format&fit=crop" },
-      { name: "Орео", img: "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=500&auto=format&fit=crop" },
-      { name: "Эклер", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop" }
-    ];
+  <div class="vs-row">
+    <div class="sweet" id="sweet-0">
+      <div class="sweet-media" id="media-0"></div>
+      <div class="sweet-name" id="name-0"></div>
+    </div>
+    <div class="vs">VS</div>
+    <div class="sweet" id="sweet-1">
+      <div class="sweet-media" id="media-1"></div>
+      <div class="sweet-name" id="name-1"></div>
+    </div>
+  </div>
+</section>
 
-    let currentPool = [];
-    let nextStagePool = [];
-    let currentIndex = 0;
-    let stageCount = 1;
+<!-- Победитель -->
+<section id="winner-screen" class="screen">
+  <h1>🏆 Победительница!</h1>
+  <div class="winner-media" id="winner-media"></div>
+  <div class="winner-name" id="winner-name"></div>
+  <p class="subtitle" style="margin-top:8px">Вот она — самая любимая сладость</p>
+  <button class="btn" id="play-again">Сыграть ещё раз</button>
+  <button class="btn secondary" id="back-to-menu">В меню</button>
+</section>
 
-    function showMenu() {
-      document.getElementById("welcome-view").style.display = "none";
-      document.getElementById("game-view").style.display = "none";
-      document.getElementById("winner-view").style.display = "none";
-      document.getElementById("menu-view").style.display = "flex";
+<script>
+  const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+
+  const SWEETS = [
+    { name: "Киндер",               file: "kinder.jpg",          emoji: "🍫" },
+    { name: "КитКат",               file: "kitkat.jpg",          emoji: "🍫" },
+    { name: "Белый шоколад",        file: "white-chocolate.jpg", emoji: "🤍" },
+    { name: "Милки Вэй",            file: "milkyway.jpg",        emoji: "🌌" },
+    { name: "Твикс",                file: "twix.jpg",            emoji: "🍪" },
+    { name: "Зефир",                file: "zefir.jpg",           emoji: "☁️" },
+    { name: "Ириски",               file: "iriski.jpg",          emoji: "🍬" },
+    { name: "Молочный шоколад",     file: "milk-chocolate.jpg",  emoji: "🍫" },
+    { name: "Апельсиновые сосалки", file: "orange-lollipop.jpg", emoji: "🍊" },
+    { name: "Солёная карамель",     file: "salted-caramel.jpg",  emoji: "🍮" },
+    { name: "Булочки с вишней",     file: "cherry-buns.jpg",     emoji: "🍒" },
+    { name: "Сникерс белый",        file: "snickers-white.jpg",  emoji: "🥜" }
+  ];
+
+  const TOTAL_ROUNDS = SWEETS.length - 1;
+
+  let pool = [];
+  let nextPool = [];
+  let cursor = 0;
+  let stage = 1;
+  let roundNumber = 1;
+
+  function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
+    window.scrollTo(0, 0);
+  }
+
+  function shuffle(items) {
+    const copy = items.slice();
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
     }
+    return copy;
+  }
 
-    function startBattle() {
-      currentPool = [...initialItems];
-      currentPool.sort(() => Math.random() - 0.5);
-      nextStagePool = [];
-      currentIndex = 0;
-      stageCount = 1;
-
-      document.getElementById("menu-view").style.display = "none";
-      document.getElementById("game-view").style.display = "flex";
-
-      renderRound();
-    }
-
-    function renderRound() {
-      const totalRoundsInStage = Math.floor(currentPool.length / 2);
-      const currentRound = Math.floor(currentIndex / 2) + 1;
-
-      document.getElementById("stage-info").innerText = Этап ${stageCount};
-      document.getElementById("round-info").innerText = Раунд ${currentRound} из ${totalRoundsInStage};
-
-      const progressPercent = ((currentRound - 1) / totalRoundsInStage) * 100;
-      document.getElementById("progress-bar").style.width = ${progressPercent}%;
-
-      const item1 = currentPool[currentIndex];
-      const item2 = currentPool[currentIndex + 1];
-
-      document.getElementById("img-0").src = item1.img;
-      document.getElementById("title-0").innerText = item1.name;
-
-      document.getElementById("img-1").src = item2.img;
-      document.getElementById("title-1").innerText = item2.name;
-    }
-
-    function selectFood(selectedIndex) {
-      const chosenItem = currentPool[currentIndex + selectedIndex];
-      nextStagePool.push(chosenItem);
-
-      currentIndex += 2;
-
-      if (currentIndex >= currentPool.length - (currentPool.length % 2)) {
-        if (currentPool.length % 2 !== 0) {
-          nextStagePool.push(currentPool[currentPool.length - 1]);
-        }
-
-        if (nextStagePool.length === 1) {
-          showWinner(nextStagePool[0]);
-          return;
-        }
-
-        currentPool = [...nextStagePool];
-        nextStagePool = [];
-        currentIndex = 0;
-        stageCount++;
-      }
-
-      renderRound();
-    }
-
-    function showWinner(winner) {
-      document.getElementById("game-view").style.display = "none";
-      document.getElementById("winner-view").style.display = "block";
-      document.getElementById("winner-img").src = winner.img;
-      document.getElementById("winner-title").innerText = winner.name;
-    }
-
-    document.getElementById("card-0").addEventListener("click", function() { selectFood(0); });
-    document.getElementById("card-1").addEventListener("click", function() { selectFood(1); });
-[03.09.2026 17:27] Никита: window.onload = function() {
-      if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.expand();
-      }
+  function fillMedia(container, sweet, fontSize) {
+    container.textContent = "";
+    const img = document.createElement("img");
+    img.src = "images/" + sweet.file;
+    img.alt = sweet.name;
+    img.onerror = () => {
+      container.textContent = sweet.emoji;
+      if (fontSize) container.style.fontSize = fontSize;
     };
-  </script>
+    container.appendChild(img);
+  }
+
+  function startBattle() {
+    pool = shuffle(SWEETS);
+    nextPool = [];
+    cursor = 0;
+    stage = 1;
+    roundNumber = 1;
+    showScreen("game-screen");
+    renderRound();
+  }
+
+  function renderRound() {
+    document.getElementById("round-label").textContent = `Раунд ${roundNumber} / ${TOTAL_ROUNDS}`;
+    document.getElementById("stage-label").textContent = `Этап ${stage}`;
+    document.getElementById("progress-fill").style.width = ((roundNumber - 1) / TOTAL_ROUNDS) * 100 + "%";
+
+    [0, 1].forEach(i => {
+      const sweet = pool[cursor + i];
+      fillMedia(document.getElementById("media-" + i), sweet);
+      document.getElementById("name-" + i).textContent = sweet.name;
+    });
+  }
+
+  function pick(side) {
+    nextPool.push(pool[cursor + side]);
+    cursor += 2;
+
+    if (cursor >= pool.length - 1) {
+      if (cursor < pool.length) nextPool.push(pool[pool.length - 1]);
+      if (nextPool.length === 1) { showWinner(nextPool[0]); return; }
+      pool = nextPool;
+      nextPool = [];
+      cursor = 0;
+      stage += 1;
+    }
+
+    roundNumber += 1;
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
+    renderRound();
+  }
+
+  function showWinner(sweet) {
+    fillMedia(document.getElementById("winner-media"), sweet, "90px");
+    document.getElementById("winner-name").textContent = sweet.name;
+    showScreen("winner-screen");
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+  }
+
+  document.getElementById("start-battle").addEventListener("click", startBattle);
+  document.getElementById("sweet-0").addEventListener("click", () => pick(0));
+  document.getElementById("sweet-1").addEventListener("click", () => pick(1));
+  document.getElementById("play-again").addEventListener("click", startBattle);
+  document.getElementById("back-to-menu").addEventListener("click", () => showScreen("menu-screen"));
+
+  if (tg) {
+    tg.ready();
+    tg.expand();
+  }
+</script>
 </body>
 </html>
