@@ -3,10 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
   <title>Битва сладостей</title>
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     body {
       margin: 0;
@@ -17,11 +23,29 @@
       min-height: 100vh;
     }
 
-    .screen { display: none; max-width: 460px; margin: 0 auto; }
-    .screen.active { display: block; }
+    .screen {
+      display: none;
+      max-width: 460px;
+      margin: 0 auto;
+    }
 
-    h1 { font-size: 22px; line-height: 1.3; margin: 24px 0 20px; text-align: center; }
-    .subtitle { text-align: center; opacity: .65; font-size: 14px; margin: -12px 0 20px; }
+    .screen.active {
+      display: block;
+    }
+
+    h1 {
+      font-size: 22px;
+      line-height: 1.3;
+      margin: 24px 0 20px;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      opacity: .65;
+      font-size: 14px;
+      margin: -12px 0 20px;
+    }
 
     .game-card {
       position: relative;
@@ -33,7 +57,10 @@
       cursor: pointer;
       transition: transform .12s ease;
     }
-    .game-card:active { transform: scale(.985); }
+
+    .game-card:active {
+      transform: scale(.985);
+    }
 
     .game-card-media {
       height: 150px;
@@ -43,13 +70,37 @@
       font-size: 62px;
       background: linear-gradient(135deg, #ffd7e6, #ffe9c7);
     }
-    .game-card-media img { width: 100%; height: 100%; object-fit: cover; }
-    .game-card-body { padding: 14px 16px 16px; }
-    .game-card-body h3 { margin: 0 0 4px; font-size: 18px; }
-    .game-card-body p { margin: 0; font-size: 13px; opacity: .65; }
 
-    .game-card.locked { cursor: default; }
-    .game-card.locked .blurred { filter: blur(6px); opacity: .65; }
+    .game-card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .game-card-body {
+      padding: 14px 16px 16px;
+    }
+
+    .game-card-body h3 {
+      margin: 0 0 4px;
+      font-size: 18px;
+    }
+
+    .game-card-body p {
+      margin: 0;
+      font-size: 13px;
+      opacity: .65;
+    }
+
+    .game-card.locked {
+      cursor: default;
+    }
+
+    .game-card.locked .blurred {
+      filter: blur(6px);
+      opacity: .65;
+    }
+
     .soon-label {
       position: absolute;
       inset: 0;
@@ -65,7 +116,6 @@
       z-index: 2;
     }
 
-    /* Хот-бар */
     .hotbar {
       position: sticky;
       top: 0;
@@ -73,6 +123,7 @@
       padding: 12px 0 14px;
       background: var(--tg-theme-bg-color, #fff5f8);
     }
+
     .hotbar-top {
       display: flex;
       justify-content: space-between;
@@ -81,13 +132,19 @@
       font-weight: 600;
       margin-bottom: 8px;
     }
-    .hotbar-stage { opacity: .6; font-weight: 500; }
+
+    .hotbar-stage {
+      opacity: .6;
+      font-weight: 500;
+    }
+
     .progress-track {
       height: 8px;
       border-radius: 99px;
       background: rgba(214, 51, 108, .15);
       overflow: hidden;
     }
+
     .progress-fill {
       height: 100%;
       width: 0;
@@ -102,6 +159,7 @@
       gap: 10px;
       margin-top: 8px;
     }
+
     .sweet {
       flex: 1 1 0;
       min-width: 0;
@@ -112,7 +170,11 @@
       cursor: pointer;
       transition: transform .12s ease;
     }
-    .sweet:active { transform: scale(.95); }
+
+    .sweet:active {
+      transform: scale(.95);
+    }
+
     .sweet-media {
       height: 150px;
       display: flex;
@@ -121,7 +183,13 @@
       font-size: 56px;
       background: linear-gradient(135deg, #ffe3ee, #fff1d9);
     }
-    .sweet-media img { width: 100%; height: 100%; object-fit: cover; }
+
+    .sweet-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     .sweet-name {
       padding: 10px 8px 12px;
       text-align: center;
@@ -129,12 +197,14 @@
       font-weight: 600;
       line-height: 1.25;
     }
+
     .vs {
       flex: 0 0 auto;
       font-size: 15px;
       font-weight: 900;
       color: #ff4d88;
     }
+
     .winner-media {
       height: 220px;
       border-radius: 20px;
@@ -146,8 +216,19 @@
       background: linear-gradient(135deg, #ffd7e6, #ffe9c7);
       box-shadow: 0 8px 24px rgba(214, 51, 108, .16);
     }
-    .winner-media img { width: 100%; height: 100%; object-fit: cover; }
-    .winner-name { text-align: center; font-size: 24px; font-weight: 800; margin: 16px 0 4px; }
+
+    .winner-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .winner-name {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 800;
+      margin: 16px 0 4px;
+    }
 
     .btn {
       display: block;
@@ -162,6 +243,7 @@
       background: var(--tg-theme-button-color, #ff4d88);
       cursor: pointer;
     }
+
     .btn.secondary {
       background: transparent;
       color: var(--tg-theme-link-color, #ff4d88);
@@ -169,299 +251,1054 @@
     }
   </style>
 </head>
+
 <body>
 
-  <!-- Меню -->
+  <!-- ==================== МЕНЮ ==================== -->
+
   <section id="menu-screen" class="screen active">
-    <h1>Привет, Машулька кисулька, во что поиграем?</h1>
+
+    <h1>
+      Привет, Машулька кисулька, во что поиграем?
+    </h1>
 
     <div class="game-card" id="start-battle">
+
       <div class="game-card-media">
-        <img src="images/menu-sweets.jpg" alt="Сладости" onerror="this.replaceWith(document.createTextNode('🍬🍫🧁'))">
+        <img
+          src="images/menu-sweets.jpg"
+          alt="Сладости"
+          onerror="this.replaceWith(document.createTextNode('🍬🍫🧁'))"
+        >
       </div>
+
       <div class="game-card-body">
         <h3>Выбери любимое</h3>
-        <p>12 сладостей, дуэли до последней победительницы</p>
+        <p>
+          12 сладостей, дуэли до последней победительницы
+        </p>
       </div>
+
     </div>
 
     <div class="game-card locked">
-      <div class="soon-label">Скоро!</div>
+
+      <div class="soon-label">
+        Скоро!
+      </div>
+
       <div class="blurred">
-        <div class="game-card-media">🍕🍔🍟</div>
+
+        <div class="game-card-media">
+          🍕🍔🍟
+        </div>
+
         <div class="game-card-body">
           <h3>Секретная игра</h3>
-          <p>Совсем скоро тут появится кое-что вкусное</p>
+          <p>
+            Совсем скоро тут появится кое-что вкусное
+          </p>
         </div>
+
       </div>
+
     </div>
+
   </section>
 
-  <!-- Игра -->
+
+  <!-- ==================== ИГРА ==================== -->
+
   <section id="game-screen" class="screen">
+
     <div class="hotbar">
+
       <div class="hotbar-top">
-        <span id="round-label">Раунд 1 / 11</span>
-        <span class="hotbar-stage" id="stage-label">Этап 1</span>
+
+        <span id="round-label">
+          Раунд 1 / 11
+        </span>
+
+        <span
+          class="hotbar-stage"
+          id="stage-label"
+        >
+          Этап 1
+        </span>
+
       </div>
-      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+
+      <div class="progress-track">
+
+        <div
+          class="progress-fill"
+          id="progress-fill"
+        ></div>
+
+      </div>
+
     </div>
+
 
     <div class="vs-row">
-      <div class="sweet" id="sweet-0">
-        <div class="sweet-media" id="media-0"></div>
-        <div class="sweet-name" id="name-0"></div>
+
+      <div
+        class="sweet"
+        id="sweet-0"
+      >
+
+        <div
+          class="sweet-media"
+          id="media-0"
+        ></div>
+
+        <div
+          class="sweet-name"
+          id="name-0"
+        ></div>
+
       </div>
-      <div class="vs">VS</div>
-      <div class="sweet" id="sweet-1">
-        <div class="sweet-media" id="media-1"></div>
-        <div class="sweet-name" id="name-1"></div>
+
+
+      <div class="vs">
+        VS
       </div>
+
+
+      <div
+        class="sweet"
+        id="sweet-1"
+      >
+
+        <div
+          class="sweet-media"
+          id="media-1"
+        ></div>
+
+        <div
+          class="sweet-name"
+          id="name-1"
+        ></div>
+
+      </div>
+
     </div>
+
   </section>
 
-  <!-- Победитель -->
+
+  <!-- ==================== ПОБЕДИТЕЛЬ ==================== -->
+
   <section id="winner-screen" class="screen">
-    <h1>🏆 Победительница!</h1>
-    <div class="winner-media" id="winner-media"></div>
-    <div class="winner-name" id="winner-name"></div>
-    <p class="subtitle" style="margin-top:8px">Вот она — самая любимая сладость</p>
-    <button class="btn" id="play-again">Сыграть ещё раз</button>
-    <button class="btn secondary" id="back-to-menu">В меню</button>
+
+    <h1>
+      🏆 Победительница!
+    </h1>
+
+    <div
+      class="winner-media"
+      id="winner-media"
+    ></div>
+
+    <div
+      class="winner-name"
+      id="winner-name"
+    ></div>
+
+    <p
+      class="subtitle"
+      style="margin-top:8px"
+    >
+      Вот она — самая любимая сладость
+    </p>
+
+    <button
+      class="btn"
+      id="play-again"
+    >
+      Сыграть ещё раз
+    </button>
+
+    <button
+      class="btn secondary"
+      id="back-to-menu"
+    >
+      В меню
+    </button>
+
   </section>
+
 
   <script>
-    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-    const API_URL = "https://YOUR-DOMAIN.COM";
 
-async function apiRequest(path, data = null) {
-  if (!tg || !tg.initData) {
-    console.warn("Telegram initData отсутствует");
-    return null;
-  }
+    /* =====================================================
+       TELEGRAM
+       ===================================================== */
 
-  const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": tg.initData
+    const tg =
+      window.Telegram &&
+      window.Telegram.WebApp
+        ? window.Telegram.WebApp
+        : null;
+
+
+    /*
+      API пока НЕ подключаем.
+
+      Это важно: игра должна работать даже тогда,
+      когда сервер аналитики ещё не настроен.
+    */
+
+    const API_URL = null;
+
+
+    /* =====================================================
+       API-ЗАГЛУШКА
+       ===================================================== */
+
+    async function apiRequest(
+      path,
+      data = null
+    ) {
+
+      /*
+        Пока API не подключено,
+        просто ничего не делаем.
+
+        Позже здесь будет настоящий сервер.
+      */
+
+      if (!API_URL) {
+        return null;
+      }
+
+
+      if (!tg || !tg.initData) {
+
+        console.warn(
+          "Telegram initData отсутствует"
+        );
+
+        return null;
+      }
+
+
+      const options = {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "X-Telegram-Init-Data": tg.initData
+        }
+
+      };
+
+
+      if (data !== null) {
+
+        options.body =
+          JSON.stringify(data);
+
+      }
+
+
+      try {
+
+        const response =
+          await fetch(
+            API_URL + path,
+            options
+          );
+
+
+        if (!response.ok) {
+
+          const errorText =
+            await response.text();
+
+          console.error(
+            "API error:",
+            response.status,
+            errorText
+          );
+
+          return null;
+        }
+
+
+        return await response.json();
+
+      } catch (error) {
+
+        console.error(
+          "API request failed:",
+          error
+        );
+
+        return null;
+      }
+
     }
-  };
 
-  if (data !== null) {
-    options.body = JSON.stringify(data);
-  }
 
-  try {
-    const response = await fetch(API_URL + path, options);
+    /* =====================================================
+       ОТКРЫТИЕ MINI APP
+       ===================================================== */
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("API error:", response.status, errorText);
-      return null;
+    async function registerMiniAppOpen() {
+
+      await apiRequest(
+        "/api/session"
+      );
+
     }
 
-    return await response.json();
-  } catch (error) {
-    console.error("API request failed:", error);
-    return null;
-  }
-}
 
-async function registerMiniAppOpen() {
-  await apiRequest("/api/session");
-}
+    /* =====================================================
+       СЛАДОСТИ
+       ===================================================== */
 
     const SWEETS = [
-      { name: "Киндер",               file: "kinder.jpg",          emoji: "🍫" },
-      { name: "КитКат",               file: "kitkat.jpg",          emoji: "🍫" },
-      { name: "Белый шоколад",        file: "white-chocolate.jpg", emoji: "🤍" },
-      { name: "Милки Вэй",            file: "milkyway.jpg",        emoji: "🌌" },
-      { name: "Твикс",                file: "twix.jpg",            emoji: "🍪" },
-      { name: "Зефир",                file: "zefir.jpg",           emoji: "☁️" },
-      { name: "Ириски",               file: "iriski.jpg",          emoji: "🍬" },
-      { name: "Молочный шоколад",     file: "milk-chocolate.jpg",  emoji: "🍫" },
-      { name: "Апельсиновые сосалки", file: "orange-lollipop.jpg", emoji: "🍊" },
-      { name: "Солёная карамель",     file: "salted-caramel.jpg",  emoji: "🍮" },
-      { name: "Булочки с вишней",     file: "cherry-buns.jpg",     emoji: "🍒" },
-      { name: "Сникерс белый",        file: "snickers-white.jpg",  emoji: "🥜" }
+
+      {
+        name: "Киндер",
+        file: "kinder.jpg",
+        emoji: "🍫"
+      },
+
+      {
+        name: "КитКат",
+        file: "kitkat.jpg",
+        emoji: "🍫"
+      },
+
+      {
+        name: "Белый шоколад",
+        file: "white-chocolate.jpg",
+        emoji: "🤍"
+      },
+
+      {
+        name: "Милки Вэй",
+        file: "milkyway.jpg",
+        emoji: "🌌"
+      },
+
+      {
+        name: "Твикс",
+        file: "twix.jpg",
+        emoji: "🍪"
+      },
+
+      {
+        name: "Зефир",
+        file: "zefir.jpg",
+        emoji: "☁️"
+      },
+
+      {
+        name: "Ириски",
+        file: "iriski.jpg",
+        emoji: "🍬"
+      },
+
+      {
+        name: "Молочный шоколад",
+        file: "milk-chocolate.jpg",
+        emoji: "🍫"
+      },
+
+      {
+        name: "Апельсиновые сосалки",
+        file: "orange-lollipop.jpg",
+        emoji: "🍊"
+      },
+
+      {
+        name: "Солёная карамель",
+        file: "salted-caramel.jpg",
+        emoji: "🍮"
+      },
+
+      {
+        name: "Булочки с вишней",
+        file: "cherry-buns.jpg",
+        emoji: "🍒"
+      },
+
+      {
+        name: "Сникерс белый",
+        file: "snickers-white.jpg",
+        emoji: "🥜"
+      }
+
     ];
 
-    const TOTAL_ROUNDS = SWEETS.length - 1;
+
+    const TOTAL_ROUNDS =
+      SWEETS.length - 1;
+
+
+    /* =====================================================
+       СОСТОЯНИЕ ИГРЫ
+       ===================================================== */
 
     let pool = [];
+
     let nextPool = [];
+
     let cursor = 0;
+
     let stage = 1;
+
     let roundNumber = 1;
 
-    // Переменные для сбора аналитики
-let gameStartTime = null;
-let roundChoices = [];
-let currentGameId = null;
 
+    /* =====================================================
+       АНАЛИТИКА
+       ===================================================== */
+
+    let gameStartTime = null;
+
+    let roundChoices = [];
+
+    let currentGameId = null;
+
+
+    /* =====================================================
+       ЭКРАНЫ
+       ===================================================== */
 
     function showScreen(id) {
-      document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
-      window.scrollTo(0, 0);
+
+      document
+        .querySelectorAll(".screen")
+        .forEach(
+          screen => {
+
+            screen.classList.toggle(
+              "active",
+              screen.id === id
+            );
+
+          }
+        );
+
+
+      window.scrollTo(
+        0,
+        0
+      );
+
     }
+
+
+    /* =====================================================
+       ПЕРЕМЕШИВАНИЕ
+       ===================================================== */
 
     function shuffle(items) {
-      const copy = items.slice();
-      for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
+
+      const copy =
+        items.slice();
+
+
+      for (
+        let i = copy.length - 1;
+        i > 0;
+        i--
+      ) {
+
+        const j =
+          Math.floor(
+            Math.random() *
+            (i + 1)
+          );
+
+
+        [
+          copy[i],
+          copy[j]
+        ] = [
+          copy[j],
+          copy[i]
+        ];
+
       }
+
+
       return copy;
+
     }
 
-    function fillMedia(container, sweet, fontSize) {
+
+    /* =====================================================
+       КАРТИНКА
+       ===================================================== */
+
+    function fillMedia(
+      container,
+      sweet,
+      fontSize
+    ) {
+
       container.textContent = "";
-      const img = document.createElement("img");
-      img.src = "images/" + sweet.file;
-      img.alt = sweet.name;
+
+
+      const img =
+        document.createElement(
+          "img"
+        );
+
+
+      img.src =
+        "images/" +
+        sweet.file;
+
+
+      img.alt =
+        sweet.name;
+
+
       img.onerror = () => {
-        container.textContent = sweet.emoji;
-        if (fontSize) container.style.fontSize = fontSize;
+
+        container.textContent =
+          sweet.emoji;
+
+
+        if (fontSize) {
+
+          container.style.fontSize =
+            fontSize;
+
+        }
+
       };
-      container.appendChild(img);
+
+
+      container.appendChild(
+        img
+      );
+
     }
 
-async function startBattle() {
-  pool = shuffle(SWEETS);
-  nextPool = [];
-  cursor = 0;
-  stage = 1;
-  roundNumber = 1;
-  roundChoices = [];
-  gameStartTime = new Date().toISOString();
-  currentGameId = null;
 
-  showScreen("game-screen");
+    /* =====================================================
+       НАЧАЛО ИГРЫ
+       ===================================================== */
 
-  const result = await apiRequest("/api/game/start");
+    async function startBattle() {
 
-  if (result && result.ok) {
-    currentGameId = result.game_id;
-  } else {
-    console.error("Не удалось создать игровую сессию");
-  }
+      /*
+        Полностью сбрасываем игру.
+      */
 
-  renderRound();
-}
+      pool =
+        shuffle(SWEETS);
 
+
+      nextPool = [];
+
+      cursor = 0;
+
+      stage = 1;
+
+      roundNumber = 1;
+
+      roundChoices = [];
+
+      gameStartTime =
+        new Date().toISOString();
+
+      currentGameId = null;
+
+
+      /*
+        ВАЖНО:
+
+        Сначала показываем игру.
+
+        Мы НЕ ждём API.
+      */
+
+      showScreen(
+        "game-screen"
+      );
+
+
+      renderRound();
+
+
+      /*
+        Если API когда-нибудь будет подключено,
+        запрос можно выполнить после запуска игры.
+
+        Сейчас API_URL = null,
+        поэтому ничего не произойдёт.
+      */
+
+      if (API_URL) {
+
+        const result =
+          await apiRequest(
+            "/api/game/start"
+          );
+
+
+        if (
+          result &&
+          result.ok
+        ) {
+
+          currentGameId =
+            result.game_id;
+
+        }
+
+      }
+
+    }
+
+
+    /* =====================================================
+       ОТОБРАЖЕНИЕ РАУНДА
+       ===================================================== */
 
     function renderRound() {
-      document.getElementById("round-label").textContent = Раунд ${roundNumber} / ${TOTAL_ROUNDS};
-      document.getElementById("stage-label").textContent = Этап ${stage};
-      document.getElementById("progress-fill").style.width = ((roundNumber - 1) / TOTAL_ROUNDS) * 100 + "%";
 
-      [0, 1].forEach(i => {
-        const sweet = pool[cursor + i];
-        fillMedia(document.getElementById("media-" + i), sweet);
-        document.getElementById("name-" + i).textContent = sweet.name;
+      document
+        .getElementById(
+          "round-label"
+        )
+        .textContent =
+        `Раунд ${roundNumber} / ${TOTAL_ROUNDS}`;
+
+
+      document
+        .getElementById(
+          "stage-label"
+        )
+        .textContent =
+        `Этап ${stage}`;
+
+
+      document
+        .getElementById(
+          "progress-fill"
+        )
+        .style.width =
+        (
+          (roundNumber - 1) /
+          TOTAL_ROUNDS *
+          100
+        ) + "%";
+
+
+      [0, 1].forEach(
+        i => {
+
+          const sweet =
+            pool[
+              cursor + i
+            ];
+
+
+          if (!sweet) {
+            return;
+          }
+
+
+          fillMedia(
+            document.getElementById(
+              "media-" + i
+            ),
+            sweet
+          );
+
+
+          document
+            .getElementById(
+              "name-" + i
+            )
+            .textContent =
+            sweet.name;
+
+        }
+      );
+
+    }
+
+
+    /* =====================================================
+       ВЫБОР СЛАДОСТИ
+       ===================================================== */
+
+    async function pick(side) {
+
+      /*
+        Получаем две текущие карточки.
+      */
+
+      const firstSweet =
+        pool[cursor];
+
+
+      const secondSweet =
+        pool[cursor + 1];
+
+
+      if (
+        !firstSweet ||
+        !secondSweet
+      ) {
+
+        return;
+
+      }
+
+
+      const option1 =
+        firstSweet.name;
+
+
+      const option2 =
+        secondSweet.name;
+
+
+      const chosen =
+        pool[
+          cursor + side
+        ].name;
+
+
+      const currentRound =
+        roundNumber;
+
+
+      const currentStage =
+        stage;
+
+
+      /*
+        Сохраняем выбор локально.
+      */
+
+      roundChoices.push({
+
+        round:
+          currentRound,
+
+        stage:
+          currentStage,
+
+        option1:
+          option1,
+
+        option2:
+          option2,
+
+        choice:
+          chosen
+
       });
-    }
 
-async function pick(side) {
-  const option1 = pool[cursor].name;
-  const option2 = pool[cursor + 1].name;
-  const chosen = pool[cursor + side].name;
 
-  const currentRound = roundNumber;
-  const currentStage = stage;
+      /*
+        API пока выключено.
 
-  // Сохраняем выбор локально
-  roundChoices.push({
-    round: currentRound,
-    stage: currentStage,
-    option1: option1,
-    option2: option2,
-    choice: chosen
-  });
+        Когда сервер будет готов,
+        этот код начнёт отправлять каждый раунд.
+      */
 
-  // Отправляем выбор на сервер
-  if (currentGameId) {
-    await apiRequest("/api/game/round", {
-      game_id: currentGameId,
-      round_number: currentRound,
-      stage: currentStage,
-      option_1: option1,
-      option_2: option2,
-      choice: chosen
-    });
-  }
+      if (
+        API_URL &&
+        currentGameId
+      ) {
 
-  nextPool.push(pool[cursor + side]);
-  cursor += 2;
+        await apiRequest(
+          "/api/game/round",
+          {
 
-  if (cursor >= pool.length - 1) {
-    if (cursor < pool.length) {
-      nextPool.push(pool[pool.length - 1]);
-    }
+            game_id:
+              currentGameId,
 
-    if (nextPool.length === 1) {
-      await showWinner(nextPool[0]);
-      return;
-    }
+            round_number:
+              currentRound,
 
-    pool = nextPool;
-    nextPool = [];
-    cursor = 0;
-    stage += 1;
-  }
+            stage:
+              currentStage,
 
-  roundNumber += 1;
+            option_1:
+              option1,
 
-  if (tg && tg.HapticFeedback) {
-    tg.HapticFeedback.impactOccurred("light");
-  }
+            option_2:
+              option2,
 
-  renderRound();
-}
+            choice:
+              chosen
+
+          }
+        );
+
+      }
+
+
+      /*
+        Победитель текущего матча
+        переходит дальше.
+      */
+
+      nextPool.push(
+        pool[
+          cursor + side
+        ]
+      );
+
+
+      cursor += 2;
+
+
+      /*
+        Проверяем окончание этапа.
+      */
+
+      if (
+        cursor >=
+        pool.length - 1
+      ) {
+
+        /*
+          Если осталась карточка без пары,
+          она автоматически проходит дальше.
+        */
+
+        if (
+          cursor <
+          pool.length
+        ) {
+
+          nextPool.push(
+            pool[
+              pool.length - 1
+            ]
+          );
+
+        }
+
+
+        /*
+          Если осталась одна карточка —
+          игра закончена.
+        */
+
+        if (
+          nextPool.length === 1
+        ) {
+
+          await showWinner(
+            nextPool[0]
+          );
+
+          return;
+
+        }
+
+
+        /*
+          Переходим на следующий этап.
+        */
+
+        pool =
+          nextPool;
+
+
+        nextPool = [];
+
+        cursor = 0;
+
+        stage += 1;
+
+      }
+
 
       roundNumber += 1;
-      if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
+
+
+      if (
+        tg &&
+        tg.HapticFeedback
+      ) {
+
+        tg.HapticFeedback
+          .impactOccurred(
+            "light"
+          );
+
+      }
+
+
       renderRound();
+
     }
 
-async function showWinner(sweet) {
-  fillMedia(
-    document.getElementById("winner-media"),
-    sweet,
-    "90px"
-  );
 
-  document.getElementById("winner-name").textContent =
-    sweet.name;
+    /* =====================================================
+       ПОБЕДИТЕЛЬ
+       ===================================================== */
 
-  showScreen("winner-screen");
+    async function showWinner(
+      sweet
+    ) {
 
-  if (tg && tg.HapticFeedback) {
-    tg.HapticFeedback.notificationOccurred("success");
-  }
+      fillMedia(
+        document.getElementById(
+          "winner-media"
+        ),
+        sweet,
+        "90px"
+      );
 
-  // Сохраняем финальную карточку
-  if (currentGameId) {
-    await apiRequest("/api/game/finish", {
-      game_id: currentGameId,
-      winner: sweet.name
-    });
-  }
-}
 
-    document.getElementById("start-battle").addEventListener("click", startBattle);
-    document.getElementById("sweet-0").addEventListener("click", () => pick(0));
-    document.getElementById("sweet-1").addEventListener("click", () => pick(1));
-    document.getElementById("play-again").addEventListener("click", startBattle);
-    document.getElementById("back-to-menu").addEventListener("click", () => showScreen("menu-screen"));
+      document
+        .getElementById(
+          "winner-name"
+        )
+        .textContent =
+        sweet.name;
 
-if (tg) {
-  tg.ready();
-  tg.expand();
 
-  registerMiniAppOpen();
-}
+      showScreen(
+        "winner-screen"
+      );
+
+
+      if (
+        tg &&
+        tg.HapticFeedback
+      ) {
+
+        tg.HapticFeedback
+          .notificationOccurred(
+            "success"
+          );
+
+      }
+
+
+      /*
+        Когда API будет готово,
+        здесь сохраним финальную карточку.
+      */
+
+      if (
+        API_URL &&
+        currentGameId
+      ) {
+
+        await apiRequest(
+          "/api/game/finish",
+          {
+
+            game_id:
+              currentGameId,
+
+            winner:
+              sweet.name
+
+          }
+        );
+
+      }
+
+    }
+
+
+    /* =====================================================
+       КНОПКИ
+       ===================================================== */
+
+    document
+      .getElementById(
+        "start-battle"
+      )
+      .addEventListener(
+        "click",
+        startBattle
+      );
+
+
+    document
+      .getElementById(
+        "sweet-0"
+      )
+      .addEventListener(
+        "click",
+        () => pick(0)
+      );
+
+
+    document
+      .getElementById(
+        "sweet-1"
+      )
+      .addEventListener(
+        "click",
+        () => pick(1)
+      );
+
+
+    document
+      .getElementById(
+        "play-again"
+      )
+      .addEventListener(
+        "click",
+        startBattle
+      );
+
+
+    document
+      .getElementById(
+        "back-to-menu"
+      )
+      .addEventListener(
+        "click",
+        () => {
+
+          showScreen(
+            "menu-screen"
+          );
+
+        }
+      );
+
+
+    /* =====================================================
+       TELEGRAM
+       ===================================================== */
+
+    if (tg) {
+
+      tg.ready();
+
+      tg.expand();
+
+
+      /*
+        Пока API отключено,
+        эта функция ничего не делает.
+      */
+
+      if (API_URL) {
+
+        registerMiniAppOpen();
+
+      }
+
+    }
+
   </script>
+
 </body>
 </html>
