@@ -21,6 +21,7 @@
     body {
       margin: 0;
       padding: 16px 16px 32px;
+
       font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -67,6 +68,7 @@
 
     .game-card {
       position: relative;
+
       border-radius: 20px;
       overflow: hidden;
 
@@ -77,6 +79,7 @@
         0 6px 20px rgba(214, 51, 108, .12);
 
       margin-bottom: 16px;
+
       cursor: pointer;
 
       transition:
@@ -484,7 +487,6 @@
 
       </div>
 
-
       <div class="progress-track">
 
         <div
@@ -610,9 +612,179 @@
 
 
     if (tg) {
+
       tg.ready();
+
       tg.expand();
+
     }
+
+
+    /* =====================================================
+       API
+       ===================================================== */
+
+    /*
+      ВАЖНО:
+
+      Здесь должен быть адрес компьютера/сервера,
+      где работает Flask API.
+
+      НЕ localhost, если Mini App открывается
+      на телефоне.
+
+      Например:
+
+      const API_URL = "https://api.example.com";
+
+      Если позже разместишь API на сервере,
+      меняем только эту строку.
+    */
+
+    const API_URL =
+      "https://YOUR-DOMAIN.COM";
+
+
+    /*
+      Отправка запроса на Flask API.
+
+      Если API не отвечает,
+      игра НЕ ломается.
+    */
+
+    async function apiRequest(
+      path,
+      data = null
+    ) {
+
+      /*
+        Если мы открыли index.html
+        просто в обычном браузере,
+        Telegram initData может отсутствовать.
+
+        В таком случае игра всё равно работает.
+      */
+
+      if (
+        !tg ||
+        !tg.initData
+      ) {
+
+        console.warn(
+          "Telegram initData отсутствует. Аналитика не отправлена."
+        );
+
+        return null;
+
+      }
+
+
+      const options = {
+
+        method: "POST",
+
+        headers: {
+
+          "Content-Type":
+            "application/json",
+
+          "X-Telegram-Init-Data":
+            tg.initData
+
+        }
+
+      };
+
+
+      if (
+        data !== null
+      ) {
+
+        options.body =
+          JSON.stringify(data);
+
+      }
+
+
+      try {
+
+        const response =
+          await fetch(
+            API_URL + path,
+            options
+          );
+
+
+        if (
+          !response.ok
+        ) {
+
+          const errorText =
+            await response.text();
+
+          console.error(
+            "API ошибка:",
+            response.status,
+            errorText
+          );
+
+          return null;
+
+        }
+
+
+        return await response.json();
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "Не удалось отправить данные API:",
+          error
+        );
+
+        return null;
+
+      }
+
+    }
+
+
+    /* =====================================================
+       РЕГИСТРАЦИЯ ОТКРЫТИЯ MINI APP
+       ===================================================== */
+
+    async function registerMiniAppOpen() {
+
+      const result =
+        await apiRequest(
+          "/api/session"
+        );
+
+
+      if (
+        result &&
+        result.ok
+      ) {
+
+        console.log(
+          "Пользователь зарегистрирован:",
+          result.telegram_id
+        );
+
+      }
+
+    }
+
+
+    /*
+      Регистрируем открытие Mini App.
+
+      Это происходит один раз при загрузке.
+    */
+
+    registerMiniAppOpen();
 
 
     /* =====================================================
@@ -701,7 +873,7 @@
 
 
     /* =====================================================
-       СОСТОЯНИЕ
+       СОСТОЯНИЕ ИГРЫ
        ===================================================== */
 
     let pool = [];
@@ -715,6 +887,12 @@
     let roundNumber = 1;
 
     let gameInProgress = false;
+
+    /*
+      ID игры в базе данных.
+    */
+
+    let currentGameId = null;
 
 
     /* =====================================================
@@ -815,15 +993,16 @@
         sweet.name;
 
 
-      img.onerror = function () {
+      img.onerror =
+        function () {
 
-        container.innerHTML =
-          sweet.emoji;
+          container.innerHTML =
+            sweet.emoji;
 
-        container.style.fontSize =
-          fontSize || "56px";
+          container.style.fontSize =
+            fontSize || "56px";
 
-      };
+        };
 
 
       container.appendChild(
@@ -933,7 +1112,7 @@
        НАЧАЛО ИГРЫ
        ===================================================== */
 
-    function startBattle() {
+    async function startBattle() {
 
       console.log(
         "Игра запускается..."
@@ -941,7 +1120,7 @@
 
 
       /*
-        Полностью создаём новую игру.
+        Новая игра.
       */
 
       pool =
@@ -958,10 +1137,14 @@
 
       gameInProgress = true;
 
+      currentGameId = null;
+
 
       /*
-        Показываем игровой экран
-        СРАЗУ.
+        Показываем игру сразу.
+
+        Даже если API не работает,
+        пользователь сможет играть.
       */
 
       showScreen(
@@ -969,16 +1152,42 @@
       );
 
 
-      /*
-        Показываем первый раунд.
-      */
-
       renderRound();
 
 
       /*
-        Лёгкая вибрация Telegram.
+        Создаём игру в базе.
       */
+
+      const result =
+        await apiRequest(
+          "/api/game/start"
+        );
+
+
+      if (
+        result &&
+        result.ok
+      ) {
+
+        currentGameId =
+          result.game_id;
+
+
+        console.log(
+          "Игра создана:",
+          currentGameId
+        );
+
+      }
+      else {
+
+        console.warn(
+          "Игра работает без серверной аналитики."
+        );
+
+      }
+
 
       if (
         tg &&
@@ -996,13 +1205,17 @@
 
 
     /* =====================================================
-       ВЫБОР
+       ВЫБОР КАРТОЧКИ
        ===================================================== */
 
-    function pick(side) {
+    async function pick(side) {
 
-      if (!gameInProgress) {
+      if (
+        !gameInProgress
+      ) {
+
         return;
+
       }
 
 
@@ -1027,16 +1240,73 @@
       }
 
 
-      const winner =
+      const chosen =
         side === 0
           ? first
           : second;
 
 
+      /*
+        Запоминаем данные раунда
+        ДО перехода к следующему.
+      */
+
+      const currentRound =
+        roundNumber;
+
+      const currentStage =
+        stage;
+
+
       console.log(
-        "Выбран:",
-        winner.name
+        `Раунд ${currentRound}:`,
+        first.name,
+        "VS",
+        second.name,
+        "→",
+        chosen.name
       );
+
+
+      /*
+        Отправляем выбор
+        на сервер.
+
+        ВАЖНО:
+
+        await здесь НЕ блокирует игру
+        надолго, но гарантирует,
+        что запрос отправлен.
+      */
+
+      if (
+        currentGameId
+      ) {
+
+        await apiRequest(
+          "/api/game/round",
+          {
+            game_id:
+              currentGameId,
+
+            round_number:
+              currentRound,
+
+            stage:
+              currentStage,
+
+            option_1:
+              first.name,
+
+            option_2:
+              second.name,
+
+            choice:
+              chosen.name
+          }
+        );
+
+      }
 
 
       /*
@@ -1045,7 +1315,7 @@
       */
 
       nextPool.push(
-        winner
+        chosen
       );
 
 
@@ -1053,7 +1323,7 @@
 
 
       /*
-        Проверяем, закончился ли этап.
+        Закончился текущий этап?
       */
 
       if (
@@ -1062,9 +1332,8 @@
       ) {
 
         /*
-          Если количество карточек
-          нечётное, последняя автоматически
-          проходит дальше.
+          Если осталась одна карточка,
+          она проходит автоматически.
         */
 
         if (
@@ -1082,7 +1351,7 @@
 
 
         /*
-          Если осталась одна карточка,
+          Если осталась одна —
           это победитель всей игры.
         */
 
@@ -1090,7 +1359,7 @@
           nextPool.length === 1
         ) {
 
-          showWinner(
+          await showWinner(
             nextPool[0]
           );
 
@@ -1100,12 +1369,11 @@
 
 
         /*
-          Начинаем следующий этап.
+          Следующий этап.
         */
 
         pool =
           nextPool;
-
 
         nextPool = [];
 
@@ -1141,7 +1409,7 @@
        ПОБЕДИТЕЛЬ
        ===================================================== */
 
-    function showWinner(
+    async function showWinner(
       sweet
     ) {
 
@@ -1188,11 +1456,53 @@
         sweet.name
       );
 
+
+      /*
+        Сохраняем итог игры.
+      */
+
+      if (
+        currentGameId
+      ) {
+
+        const result =
+          await apiRequest(
+            "/api/game/finish",
+            {
+              game_id:
+                currentGameId,
+
+              winner:
+                sweet.name
+            }
+          );
+
+
+        if (
+          result &&
+          result.ok
+        ) {
+
+          console.log(
+            "Результат игры сохранён."
+          );
+
+        }
+        else {
+
+          console.warn(
+            "Не удалось сохранить результат игры."
+          );
+
+        }
+
+      }
+
     }
 
 
     /* =====================================================
-       ОБРАБОТЧИКИ КНОПОК
+       КНОПКА НАЧАЛА
        ===================================================== */
 
     document
@@ -1204,7 +1514,7 @@
         function () {
 
           console.log(
-            "Нажата кнопка Выбери любимое"
+            "Нажата кнопка «Выбери любимое»"
           );
 
           startBattle();
@@ -1212,6 +1522,10 @@
         }
       );
 
+
+    /* =====================================================
+       КАРТОЧКА 1
+       ===================================================== */
 
     document
       .getElementById(
@@ -1227,6 +1541,10 @@
       );
 
 
+    /* =====================================================
+       КАРТОЧКА 2
+       ===================================================== */
+
     document
       .getElementById(
         "sweet-1"
@@ -1240,6 +1558,10 @@
         }
       );
 
+
+    /* =====================================================
+       ИГРАТЬ ЕЩЁ РАЗ
+       ===================================================== */
 
     document
       .getElementById(
@@ -1255,6 +1577,10 @@
       );
 
 
+    /* =====================================================
+       В МЕНЮ
+       ===================================================== */
+
     document
       .getElementById(
         "back-to-menu"
@@ -1264,6 +1590,8 @@
         function () {
 
           gameInProgress = false;
+
+          currentGameId = null;
 
           showScreen(
             "menu-screen"
@@ -1278,7 +1606,7 @@
        ===================================================== */
 
     console.log(
-      "Битва сладостей загружена"
+      "Битва сладостей загружена."
     );
 
   </script>
