@@ -1,13 +1,3 @@
-"""
-Telegram-бот «Битва сладостей».
-
-Функции:
-- /start сохраняет пользователя;
-- Mini App отправляет игровые события на API;
-- SQLite хранит пользователей, игры и раунды;
-- /admin доступен только администратору.
-"""
-
 import hashlib
 import hmac
 import json
@@ -60,8 +50,6 @@ WEBAPP_URL = os.environ.get(
 API_HOST = os.environ.get("API_HOST", "0.0.0.0")
 API_PORT = int(os.environ.get("API_PORT", "8000"))
 
-# На первом этапе авторизация по username.
-# Позже обязательно добавим Telegram ID.
 ADMIN_USERNAME = os.environ.get(
     "ADMIN_USERNAME",
     "Fastmilk1",
@@ -92,13 +80,6 @@ init_db()
 # ============================================================
 
 def validate_init_data(init_data: str):
-    """
-    Проверяет Telegram WebApp initData.
-
-    Возвращает данные пользователя Telegram,
-    если подпись корректна.
-    """
-
     if not init_data:
         raise ValueError("Empty Telegram initData")
 
@@ -112,8 +93,6 @@ def validate_init_data(init_data: str):
     if not received_hash:
         raise ValueError("Missing hash")
 
-    # Telegram Bot API:
-    # secret_key = HMAC-SHA256(bot_token, "WebAppData")
     secret_key = hmac.new(
         b"WebAppData",
         BOT_TOKEN.encode(),
@@ -139,8 +118,6 @@ def validate_init_data(init_data: str):
 
     auth_date = int(parsed.get("auth_date", "0"))
 
-    # Не принимаем бесконечно старые initData.
-    # 24 часа достаточно для Mini App.
     if auth_date and time.time() - auth_date > 86400:
         raise ValueError("Telegram initData expired")
 
@@ -207,12 +184,6 @@ async def health():
 
 @api.post("/api/session")
 async def create_session(request: Request):
-    """
-    Вызывается при открытии Mini App.
-
-    Фиксируем пользователя и факт открытия приложения.
-    """
-
     user = get_user_from_request(request)
 
     return {
@@ -223,10 +194,6 @@ async def create_session(request: Request):
 
 @api.post("/api/game/start")
 async def api_game_start(request: Request):
-    """
-    Создаём новую игровую сессию.
-    """
-
     user = get_user_from_request(request)
 
     game_id = create_game(user["id"])
@@ -245,10 +212,6 @@ async def api_game_start(request: Request):
 
 @api.post("/api/game/round")
 async def api_game_round(request: Request):
-    """
-    Сохраняем один раунд.
-    """
-
     user = get_user_from_request(request)
 
     try:
@@ -298,10 +261,6 @@ async def api_game_round(request: Request):
 
 @api.post("/api/game/finish")
 async def api_game_finish(request: Request):
-    """
-    Завершаем игру и сохраняем победителя.
-    """
-
     user = get_user_from_request(request)
 
     try:
@@ -467,7 +426,7 @@ async def admin_callback(
         if not users:
             text = "👥 Пользователей пока нет."
         else:
-            lines = ["👥 <b>Последние пользователи</b>\n"]
+            lines = ["👥 <b>Последние пользователи</b>"]
 
             for index, item in enumerate(users, 1):
                 username = (
@@ -516,59 +475,17 @@ async def admin_callback(
 
         if not games:
             text = "🎮 Игр пока нет."
-        else:
-            lines = ["🎮 <b>Последние игры</b>\n"]
 
-            buttons = []
-
-            for index, game in enumerate(games, 1):
-                name = " ".join(
-                    x for x in [
-                        game["first_name"],
-                        game["last_name"],
-                    ]
-                    if x
-                ) or "Без имени"
-
-                username = (
-                    f"@{game['username']}"
-                    if game["username"]
-                    else "без username"
-                )
-
-                status = (
-                    f"🏆 {game['winner']}"
-                    if game["winner"]
-                    else "⏳ не завершена"
-                )
-
-                lines.append(
-                    f"{index}. {name} ({username})\n"
-                    f"   {status}\n"
-                    f"   {game['started_at']}"
-                )
-
-                buttons.append(
+            keyboard = InlineKeyboardMarkup(
+                [
                     [
                         InlineKeyboardButton(
-                            f"🎮 Игра {index}",
-                            callback_data=f"admin:game:{game['id']}",
+                            "⬅️ Назад",
+                            callback_data="admin:home",
                         )
                     ]
-                )
-
-            text = "\n\n".join(lines)
-
-            buttons.append(
-                [
-                    InlineKeyboardButton(
-                        "⬅️ Назад",
-                        callback_data="admin:home",
-                    )
                 ]
             )
-
-            keyboard = InlineKeyboardMarkup(buttons)
 
             await query.edit_message_text(
                 text,
@@ -577,20 +494,57 @@ async def admin_callback(
             )
             return
 
-        keyboard = InlineKeyboardMarkup(
-            [
+        lines = ["🎮 <b>Последние игры</b>"]
+        buttons = []
+
+        for index, game in enumerate(games, 1):
+            name = " ".join(
+                x for x in [
+                    game["first_name"],
+                    game["last_name"],
+                ]
+                if x
+            ) or "Без имени"
+
+            username = (
+                f"@{game['username']}"
+                if game["username"]
+                else "без username"
+            )
+
+            status = (
+                f"🏆 {game['winner']}"
+                if game["winner"]
+                else "⏳ не завершена"
+            )
+
+            lines.append(
+                f"{index}. {name} ({username})\n"
+                f"   {status}\n"
+                f"   {game['started_at']}"
+            )
+
+            buttons.append(
                 [
                     InlineKeyboardButton(
-                        "⬅️ Назад",
-                        callback_data="admin:home",
+                        f"🎮 Игра {index}",
+                        callback_data=f"admin:game:{game['id']}",
                     )
                 ]
+            )
+
+        buttons.append(
+            [
+                InlineKeyboardButton(
+                    "⬅️ Назад",
+                    callback_data="admin:home",
+                )
             ]
         )
 
         await query.edit_message_text(
-            text,
-            reply_markup=keyboard,
+            "\n\n".join(lines),
+            reply_markup=InlineKeyboardMarkup(buttons),
             parse_mode="HTML",
         )
 
