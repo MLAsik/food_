@@ -232,6 +232,45 @@
 
   <script>
     const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    const API_URL = "https://YOUR-DOMAIN.COM";
+
+async function apiRequest(path, data = null) {
+  if (!tg || !tg.initData) {
+    console.warn("Telegram initData отсутствует");
+    return null;
+  }
+
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Telegram-Init-Data": tg.initData
+    }
+  };
+
+  if (data !== null) {
+    options.body = JSON.stringify(data);
+  }
+
+  try {
+    const response = await fetch(API_URL + path, options);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("API error:", response.status, errorText);
+      return null;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("API request failed:", error);
+    return null;
+  }
+}
+
+async function registerMiniAppOpen() {
+  await apiRequest("/api/session");
+}
 
     const SWEETS = [
       { name: "Киндер",               file: "kinder.jpg",          emoji: "🍫" },
@@ -257,8 +296,10 @@
     let roundNumber = 1;
 
     // Переменные для сбора аналитики
-    let gameStartTime = null;
-    let roundChoices = [];
+let gameStartTime = null;
+let roundChoices = [];
+let currentGameId = null;
+
 
     function showScreen(id) {
       document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
@@ -286,18 +327,29 @@
       container.appendChild(img);
     }
 
-    function startBattle() {
-      pool = shuffle(SWEETS);
-      nextPool = [];
-      cursor = 0;
-      stage = 1;
-      roundNumber = 1;
-      roundChoices = [];
-      gameStartTime = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+async function startBattle() {
+  pool = shuffle(SWEETS);
+  nextPool = [];
+  cursor = 0;
+  stage = 1;
+  roundNumber = 1;
+  roundChoices = [];
+  gameStartTime = new Date().toISOString();
+  currentGameId = null;
 
-      showScreen("game-screen");
-      renderRound();
-    }
+  showScreen("game-screen");
+
+  const result = await apiRequest("/api/game/start");
+
+  if (result && result.ok) {
+    currentGameId = result.game_id;
+  } else {
+    console.error("Не удалось создать игровую сессию");
+  }
+
+  renderRound();
+}
+
 
     function renderRound() {
       document.getElementById("round-label").textContent = Раунд ${roundNumber} / ${TOTAL_ROUNDS};
