@@ -2,7 +2,11 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
 
   <title>Битва сладостей</title>
 
@@ -17,9 +21,19 @@
     body {
       margin: 0;
       padding: 16px 16px 32px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--tg-theme-bg-color, #fff5f8);
-      color: var(--tg-theme-text-color, #2b2b2b);
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+
+      background:
+        var(--tg-theme-bg-color, #fff5f8);
+
+      color:
+        var(--tg-theme-text-color, #2b2b2b);
+
       min-height: 100vh;
     }
 
@@ -47,15 +61,26 @@
       margin: -12px 0 20px;
     }
 
+    /* =========================
+       МЕНЮ
+       ========================= */
+
     .game-card {
       position: relative;
       border-radius: 20px;
       overflow: hidden;
-      background: var(--tg-theme-secondary-bg-color, #fff);
-      box-shadow: 0 6px 20px rgba(214, 51, 108, .12);
+
+      background:
+        var(--tg-theme-secondary-bg-color, #fff);
+
+      box-shadow:
+        0 6px 20px rgba(214, 51, 108, .12);
+
       margin-bottom: 16px;
       cursor: pointer;
-      transition: transform .12s ease;
+
+      transition:
+        transform .12s ease;
     }
 
     .game-card:active {
@@ -64,11 +89,19 @@
 
     .game-card-media {
       height: 150px;
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       font-size: 62px;
-      background: linear-gradient(135deg, #ffd7e6, #ffe9c7);
+
+      background:
+        linear-gradient(
+          135deg,
+          #ffd7e6,
+          #ffe9c7
+        );
     }
 
     .game-card-media img {
@@ -104,32 +137,49 @@
     .soon-label {
       position: absolute;
       inset: 0;
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       font-size: 26px;
       font-weight: 800;
       letter-spacing: 1px;
+
       color: #fff;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, .35);
-      background: rgba(0, 0, 0, .12);
+
+      text-shadow:
+        0 2px 10px rgba(0, 0, 0, .35);
+
+      background:
+        rgba(0, 0, 0, .12);
+
       z-index: 2;
     }
+
+    /* =========================
+       ПРОГРЕСС
+       ========================= */
 
     .hotbar {
       position: sticky;
       top: 0;
       z-index: 5;
+
       padding: 12px 0 14px;
-      background: var(--tg-theme-bg-color, #fff5f8);
+
+      background:
+        var(--tg-theme-bg-color, #fff5f8);
     }
 
     .hotbar-top {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
+
       font-size: 14px;
       font-weight: 600;
+
       margin-bottom: 8px;
     }
 
@@ -140,35 +190,63 @@
 
     .progress-track {
       height: 8px;
+
       border-radius: 99px;
-      background: rgba(214, 51, 108, .15);
+
+      background:
+        rgba(214, 51, 108, .15);
+
       overflow: hidden;
     }
 
     .progress-fill {
       height: 100%;
       width: 0;
+
       border-radius: 99px;
-      background: linear-gradient(90deg, #ff7eb3, #ff4d88);
-      transition: width .3s ease;
+
+      background:
+        linear-gradient(
+          90deg,
+          #ff7eb3,
+          #ff4d88
+        );
+
+      transition:
+        width .3s ease;
     }
+
+    /* =========================
+       КАРТОЧКИ
+       ========================= */
 
     .vs-row {
       display: flex;
       align-items: center;
+
       gap: 10px;
+
       margin-top: 8px;
     }
 
     .sweet {
       flex: 1 1 0;
       min-width: 0;
+
       border-radius: 18px;
-      background: var(--tg-theme-secondary-bg-color, #fff);
-      box-shadow: 0 6px 18px rgba(214, 51, 108, .12);
+
+      background:
+        var(--tg-theme-secondary-bg-color, #fff);
+
+      box-shadow:
+        0 6px 18px rgba(214, 51, 108, .12);
+
       overflow: hidden;
+
       cursor: pointer;
-      transition: transform .12s ease;
+
+      transition:
+        transform .12s ease;
     }
 
     .sweet:active {
@@ -177,11 +255,19 @@
 
     .sweet-media {
       height: 150px;
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       font-size: 56px;
-      background: linear-gradient(135deg, #ffe3ee, #fff1d9);
+
+      background:
+        linear-gradient(
+          135deg,
+          #ffe3ee,
+          #fff1d9
+        );
     }
 
     .sweet-media img {
@@ -192,29 +278,50 @@
 
     .sweet-name {
       padding: 10px 8px 12px;
+
       text-align: center;
+
       font-size: 14px;
       font-weight: 600;
+
       line-height: 1.25;
     }
 
     .vs {
       flex: 0 0 auto;
+
       font-size: 15px;
       font-weight: 900;
+
       color: #ff4d88;
     }
 
+    /* =========================
+       ПОБЕДИТЕЛЬ
+       ========================= */
+
     .winner-media {
       height: 220px;
+
       border-radius: 20px;
+
       overflow: hidden;
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       font-size: 90px;
-      background: linear-gradient(135deg, #ffd7e6, #ffe9c7);
-      box-shadow: 0 8px 24px rgba(214, 51, 108, .16);
+
+      background:
+        linear-gradient(
+          135deg,
+          #ffd7e6,
+          #ffe9c7
+        );
+
+      box-shadow:
+        0 8px 24px rgba(214, 51, 108, .16);
     }
 
     .winner-media img {
@@ -225,28 +332,48 @@
 
     .winner-name {
       text-align: center;
+
       font-size: 24px;
       font-weight: 800;
+
       margin: 16px 0 4px;
     }
 
+    /* =========================
+       КНОПКИ
+       ========================= */
+
     .btn {
       display: block;
+
       width: 100%;
+
       margin-top: 20px;
+
       padding: 14px;
+
       border: none;
+
       border-radius: 14px;
+
       font-size: 16px;
       font-weight: 700;
-      color: var(--tg-theme-button-text-color, #fff);
-      background: var(--tg-theme-button-color, #ff4d88);
+
+      color:
+        var(--tg-theme-button-text-color, #fff);
+
+      background:
+        var(--tg-theme-button-color, #ff4d88);
+
       cursor: pointer;
     }
 
     .btn.secondary {
       background: transparent;
-      color: var(--tg-theme-link-color, #ff4d88);
+
+      color:
+        var(--tg-theme-link-color, #ff4d88);
+
       margin-top: 8px;
     }
   </style>
@@ -254,32 +381,51 @@
 
 <body>
 
-  <!-- ==================== МЕНЮ ==================== -->
+  <!-- =========================
+       МЕНЮ
+       ========================= -->
 
-  <section id="menu-screen" class="screen active">
+  <section
+    id="menu-screen"
+    class="screen active"
+  >
 
     <h1>
       Привет, Машулька кисулька, во что поиграем?
     </h1>
 
-    <div class="game-card" id="start-battle">
+    <div
+      class="game-card"
+      id="start-battle"
+    >
 
       <div class="game-card-media">
+
         <img
           src="images/menu-sweets.jpg"
           alt="Сладости"
-          onerror="this.replaceWith(document.createTextNode('🍬🍫🧁'))"
+          onerror="
+            this.style.display='none';
+            this.parentElement.innerHTML='🍬🍫🧁';
+          "
         >
+
       </div>
 
       <div class="game-card-body">
-        <h3>Выбери любимое</h3>
+
+        <h3>
+          Выбери любимое
+        </h3>
+
         <p>
           12 сладостей, дуэли до последней победительницы
         </p>
+
       </div>
 
     </div>
+
 
     <div class="game-card locked">
 
@@ -294,10 +440,15 @@
         </div>
 
         <div class="game-card-body">
-          <h3>Секретная игра</h3>
+
+          <h3>
+            Секретная игра
+          </h3>
+
           <p>
             Совсем скоро тут появится кое-что вкусное
           </p>
+
         </div>
 
       </div>
@@ -307,9 +458,14 @@
   </section>
 
 
-  <!-- ==================== ИГРА ==================== -->
+  <!-- =========================
+       ИГРА
+       ========================= -->
 
-  <section id="game-screen" class="screen">
+  <section
+    id="game-screen"
+    class="screen"
+  >
 
     <div class="hotbar">
 
@@ -327,6 +483,7 @@
         </span>
 
       </div>
+
 
       <div class="progress-track">
 
@@ -387,23 +544,31 @@
   </section>
 
 
-  <!-- ==================== ПОБЕДИТЕЛЬ ==================== -->
+  <!-- =========================
+       ПОБЕДИТЕЛЬ
+       ========================= -->
 
-  <section id="winner-screen" class="screen">
+  <section
+    id="winner-screen"
+    class="screen"
+  >
 
     <h1>
       🏆 Победительница!
     </h1>
+
 
     <div
       class="winner-media"
       id="winner-media"
     ></div>
 
+
     <div
       class="winner-name"
       id="winner-name"
     ></div>
+
 
     <p
       class="subtitle"
@@ -412,12 +577,14 @@
       Вот она — самая любимая сладость
     </p>
 
+
     <button
       class="btn"
       id="play-again"
     >
       Сыграть ещё раз
     </button>
+
 
     <button
       class="btn secondary"
@@ -442,116 +609,9 @@
         : null;
 
 
-    /*
-      API пока НЕ подключаем.
-
-      Это важно: игра должна работать даже тогда,
-      когда сервер аналитики ещё не настроен.
-    */
-
-    const API_URL = null;
-
-
-    /* =====================================================
-       API-ЗАГЛУШКА
-       ===================================================== */
-
-    async function apiRequest(
-      path,
-      data = null
-    ) {
-
-      /*
-        Пока API не подключено,
-        просто ничего не делаем.
-
-        Позже здесь будет настоящий сервер.
-      */
-
-      if (!API_URL) {
-        return null;
-      }
-
-
-      if (!tg || !tg.initData) {
-
-        console.warn(
-          "Telegram initData отсутствует"
-        );
-
-        return null;
-      }
-
-
-      const options = {
-
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-          "X-Telegram-Init-Data": tg.initData
-        }
-
-      };
-
-
-      if (data !== null) {
-
-        options.body =
-          JSON.stringify(data);
-
-      }
-
-
-      try {
-
-        const response =
-          await fetch(
-            API_URL + path,
-            options
-          );
-
-
-        if (!response.ok) {
-
-          const errorText =
-            await response.text();
-
-          console.error(
-            "API error:",
-            response.status,
-            errorText
-          );
-
-          return null;
-        }
-
-
-        return await response.json();
-
-      } catch (error) {
-
-        console.error(
-          "API request failed:",
-          error
-        );
-
-        return null;
-      }
-
-    }
-
-
-    /* =====================================================
-       ОТКРЫТИЕ MINI APP
-       ===================================================== */
-
-    async function registerMiniAppOpen() {
-
-      await apiRequest(
-        "/api/session"
-      );
-
+    if (tg) {
+      tg.ready();
+      tg.expand();
     }
 
 
@@ -641,7 +701,7 @@
 
 
     /* =====================================================
-       СОСТОЯНИЕ ИГРЫ
+       СОСТОЯНИЕ
        ===================================================== */
 
     let pool = [];
@@ -654,16 +714,7 @@
 
     let roundNumber = 1;
 
-
-    /* =====================================================
-       АНАЛИТИКА
-       ===================================================== */
-
-    let gameStartTime = null;
-
-    let roundChoices = [];
-
-    let currentGameId = null;
+    let gameInProgress = false;
 
 
     /* =====================================================
@@ -740,10 +791,13 @@
     function fillMedia(
       container,
       sweet,
-      fontSize
+      fontSize = null
     ) {
 
-      container.textContent = "";
+      container.innerHTML = "";
+
+      container.style.fontSize =
+        fontSize || "";
 
 
       const img =
@@ -761,18 +815,13 @@
         sweet.name;
 
 
-      img.onerror = () => {
+      img.onerror = function () {
 
-        container.textContent =
+        container.innerHTML =
           sweet.emoji;
 
-
-        if (fontSize) {
-
-          container.style.fontSize =
-            fontSize;
-
-        }
+        container.style.fontSize =
+          fontSize || "56px";
 
       };
 
@@ -785,87 +834,35 @@
 
 
     /* =====================================================
-       НАЧАЛО ИГРЫ
-       ===================================================== */
-
-    async function startBattle() {
-
-      /*
-        Полностью сбрасываем игру.
-      */
-
-      pool =
-        shuffle(SWEETS);
-
-
-      nextPool = [];
-
-      cursor = 0;
-
-      stage = 1;
-
-      roundNumber = 1;
-
-      roundChoices = [];
-
-      gameStartTime =
-        new Date().toISOString();
-
-      currentGameId = null;
-
-
-      /*
-        ВАЖНО:
-
-        Сначала показываем игру.
-
-        Мы НЕ ждём API.
-      */
-
-      showScreen(
-        "game-screen"
-      );
-
-
-      renderRound();
-
-
-      /*
-        Если API когда-нибудь будет подключено,
-        запрос можно выполнить после запуска игры.
-
-        Сейчас API_URL = null,
-        поэтому ничего не произойдёт.
-      */
-
-      if (API_URL) {
-
-        const result =
-          await apiRequest(
-            "/api/game/start"
-          );
-
-
-        if (
-          result &&
-          result.ok
-        ) {
-
-          currentGameId =
-            result.game_id;
-
-        }
-
-      }
-
-    }
-
-
-    /* =====================================================
        ОТОБРАЖЕНИЕ РАУНДА
        ===================================================== */
 
     function renderRound() {
+
+      const first =
+        pool[cursor];
+
+      const second =
+        pool[cursor + 1];
+
+
+      if (
+        !first ||
+        !second
+      ) {
+
+        console.error(
+          "Не удалось получить карточки раунда",
+          {
+            cursor,
+            pool
+          }
+        );
+
+        return;
+
+      }
+
 
       document
         .getElementById(
@@ -883,176 +880,172 @@
         `Этап ${stage}`;
 
 
+      const progress =
+        (
+          (roundNumber - 1) /
+          TOTAL_ROUNDS
+        ) * 100;
+
+
       document
         .getElementById(
           "progress-fill"
         )
         .style.width =
-        (
-          (roundNumber - 1) /
-          TOTAL_ROUNDS *
-          100
-        ) + "%";
+        progress + "%";
 
 
-      [0, 1].forEach(
-        i => {
-
-          const sweet =
-            pool[
-              cursor + i
-            ];
-
-
-          if (!sweet) {
-            return;
-          }
-
-
-          fillMedia(
-            document.getElementById(
-              "media-" + i
-            ),
-            sweet
-          );
-
-
-          document
-            .getElementById(
-              "name-" + i
-            )
-            .textContent =
-            sweet.name;
-
-        }
+      fillMedia(
+        document.getElementById(
+          "media-0"
+        ),
+        first
       );
+
+
+      fillMedia(
+        document.getElementById(
+          "media-1"
+        ),
+        second
+      );
+
+
+      document
+        .getElementById(
+          "name-0"
+        )
+        .textContent =
+        first.name;
+
+
+      document
+        .getElementById(
+          "name-1"
+        )
+        .textContent =
+        second.name;
 
     }
 
 
     /* =====================================================
-       ВЫБОР СЛАДОСТИ
+       НАЧАЛО ИГРЫ
        ===================================================== */
 
-    async function pick(side) {
+    function startBattle() {
+
+      console.log(
+        "Игра запускается..."
+      );
+
 
       /*
-        Получаем две текущие карточки.
+        Полностью создаём новую игру.
       */
 
-      const firstSweet =
+      pool =
+        shuffle(SWEETS);
+
+
+      nextPool = [];
+
+      cursor = 0;
+
+      stage = 1;
+
+      roundNumber = 1;
+
+      gameInProgress = true;
+
+
+      /*
+        Показываем игровой экран
+        СРАЗУ.
+      */
+
+      showScreen(
+        "game-screen"
+      );
+
+
+      /*
+        Показываем первый раунд.
+      */
+
+      renderRound();
+
+
+      /*
+        Лёгкая вибрация Telegram.
+      */
+
+      if (
+        tg &&
+        tg.HapticFeedback
+      ) {
+
+        tg.HapticFeedback
+          .impactOccurred(
+            "light"
+          );
+
+      }
+
+    }
+
+
+    /* =====================================================
+       ВЫБОР
+       ===================================================== */
+
+    function pick(side) {
+
+      if (!gameInProgress) {
+        return;
+      }
+
+
+      const first =
         pool[cursor];
 
-
-      const secondSweet =
+      const second =
         pool[cursor + 1];
 
 
       if (
-        !firstSweet ||
-        !secondSweet
+        !first ||
+        !second
       ) {
+
+        console.error(
+          "Карточки не найдены"
+        );
 
         return;
 
       }
 
 
-      const option1 =
-        firstSweet.name;
+      const winner =
+        side === 0
+          ? first
+          : second;
 
 
-      const option2 =
-        secondSweet.name;
-
-
-      const chosen =
-        pool[
-          cursor + side
-        ].name;
-
-
-      const currentRound =
-        roundNumber;
-
-
-      const currentStage =
-        stage;
+      console.log(
+        "Выбран:",
+        winner.name
+      );
 
 
       /*
-        Сохраняем выбор локально.
-      */
-
-      roundChoices.push({
-
-        round:
-          currentRound,
-
-        stage:
-          currentStage,
-
-        option1:
-          option1,
-
-        option2:
-          option2,
-
-        choice:
-          chosen
-
-      });
-
-
-      /*
-        API пока выключено.
-
-        Когда сервер будет готов,
-        этот код начнёт отправлять каждый раунд.
-      */
-
-      if (
-        API_URL &&
-        currentGameId
-      ) {
-
-        await apiRequest(
-          "/api/game/round",
-          {
-
-            game_id:
-              currentGameId,
-
-            round_number:
-              currentRound,
-
-            stage:
-              currentStage,
-
-            option_1:
-              option1,
-
-            option_2:
-              option2,
-
-            choice:
-              chosen
-
-          }
-        );
-
-      }
-
-
-      /*
-        Победитель текущего матча
+        Победитель раунда
         переходит дальше.
       */
 
       nextPool.push(
-        pool[
-          cursor + side
-        ]
+        winner
       );
 
 
@@ -1060,7 +1053,7 @@
 
 
       /*
-        Проверяем окончание этапа.
+        Проверяем, закончился ли этап.
       */
 
       if (
@@ -1069,8 +1062,9 @@
       ) {
 
         /*
-          Если осталась карточка без пары,
-          она автоматически проходит дальше.
+          Если количество карточек
+          нечётное, последняя автоматически
+          проходит дальше.
         */
 
         if (
@@ -1088,15 +1082,15 @@
 
 
         /*
-          Если осталась одна карточка —
-          игра закончена.
+          Если осталась одна карточка,
+          это победитель всей игры.
         */
 
         if (
           nextPool.length === 1
         ) {
 
-          await showWinner(
+          showWinner(
             nextPool[0]
           );
 
@@ -1106,7 +1100,7 @@
 
 
         /*
-          Переходим на следующий этап.
+          Начинаем следующий этап.
         */
 
         pool =
@@ -1147,9 +1141,12 @@
        ПОБЕДИТЕЛЬ
        ===================================================== */
 
-    async function showWinner(
+    function showWinner(
       sweet
     ) {
+
+      gameInProgress = false;
+
 
       fillMedia(
         document.getElementById(
@@ -1186,36 +1183,16 @@
       }
 
 
-      /*
-        Когда API будет готово,
-        здесь сохраним финальную карточку.
-      */
-
-      if (
-        API_URL &&
-        currentGameId
-      ) {
-
-        await apiRequest(
-          "/api/game/finish",
-          {
-
-            game_id:
-              currentGameId,
-
-            winner:
-              sweet.name
-
-          }
-        );
-
-      }
+      console.log(
+        "Победитель:",
+        sweet.name
+      );
 
     }
 
 
     /* =====================================================
-       КНОПКИ
+       ОБРАБОТЧИКИ КНОПОК
        ===================================================== */
 
     document
@@ -1224,7 +1201,15 @@
       )
       .addEventListener(
         "click",
-        startBattle
+        function () {
+
+          console.log(
+            "Нажата кнопка Выбери любимое"
+          );
+
+          startBattle();
+
+        }
       );
 
 
@@ -1234,7 +1219,11 @@
       )
       .addEventListener(
         "click",
-        () => pick(0)
+        function () {
+
+          pick(0);
+
+        }
       );
 
 
@@ -1244,7 +1233,11 @@
       )
       .addEventListener(
         "click",
-        () => pick(1)
+        function () {
+
+          pick(1);
+
+        }
       );
 
 
@@ -1254,7 +1247,11 @@
       )
       .addEventListener(
         "click",
-        startBattle
+        function () {
+
+          startBattle();
+
+        }
       );
 
 
@@ -1264,7 +1261,9 @@
       )
       .addEventListener(
         "click",
-        () => {
+        function () {
+
+          gameInProgress = false;
 
           showScreen(
             "menu-screen"
@@ -1275,28 +1274,12 @@
 
 
     /* =====================================================
-       TELEGRAM
+       ГОТОВО
        ===================================================== */
 
-    if (tg) {
-
-      tg.ready();
-
-      tg.expand();
-
-
-      /*
-        Пока API отключено,
-        эта функция ничего не делает.
-      */
-
-      if (API_URL) {
-
-        registerMiniAppOpen();
-
-      }
-
-    }
+    console.log(
+      "Битва сладостей загружена"
+    );
 
   </script>
 
