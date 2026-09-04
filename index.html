@@ -363,50 +363,92 @@ async function startBattle() {
       });
     }
 
-    function pick(side) {
-      const option1 = pool[cursor].name;
-      const option2 = pool[cursor + 1].name;
-      const chosen = pool[cursor + side].name;
+async function pick(side) {
+  const option1 = pool[cursor].name;
+  const option2 = pool[cursor + 1].name;
+  const chosen = pool[cursor + side].name;
 
-      // Логируем результат раунда
-      roundChoices.push(${option1} vs ${option2} (выбрано: ${chosen}));
+  const currentRound = roundNumber;
+  const currentStage = stage;
 
-      nextPool.push(pool[cursor + side]);
-      cursor += 2;
+  // Сохраняем выбор локально
+  roundChoices.push({
+    round: currentRound,
+    stage: currentStage,
+    option1: option1,
+    option2: option2,
+    choice: chosen
+  });
 
-      if (cursor >= pool.length - 1) {
-        if (cursor < pool.length) nextPool.push(pool[pool.length - 1]);
-        if (nextPool.length === 1) {
-          showWinner(nextPool[0]);
-          return;
-        }
-        pool = nextPool;
-        nextPool = [];
-        cursor = 0;
-        stage += 1;
-      }
+  // Отправляем выбор на сервер
+  if (currentGameId) {
+    await apiRequest("/api/game/round", {
+      game_id: currentGameId,
+      round_number: currentRound,
+      stage: currentStage,
+      option_1: option1,
+      option_2: option2,
+      choice: chosen
+    });
+  }
+
+  nextPool.push(pool[cursor + side]);
+  cursor += 2;
+
+  if (cursor >= pool.length - 1) {
+    if (cursor < pool.length) {
+      nextPool.push(pool[pool.length - 1]);
+    }
+
+    if (nextPool.length === 1) {
+      await showWinner(nextPool[0]);
+      return;
+    }
+
+    pool = nextPool;
+    nextPool = [];
+    cursor = 0;
+    stage += 1;
+  }
+
+  roundNumber += 1;
+
+  if (tg && tg.HapticFeedback) {
+    tg.HapticFeedback.impactOccurred("light");
+  }
+
+  renderRound();
+}
 
       roundNumber += 1;
       if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
       renderRound();
     }
 
-    function showWinner(sweet) {
-      fillMedia(document.getElementById("winner-media"), sweet, "90px");
-      document.getElementById("winner-name").textContent = sweet.name;
-      showScreen("winner-screen");
-      if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+async function showWinner(sweet) {
+  fillMedia(
+    document.getElementById("winner-media"),
+    sweet,
+    "90px"
+  );
 
-      // Отправляем данные боту при завершении игры
-      if (tg && tg.sendData) {
-        const gameResult = {
-          startTime: gameStartTime,
-          winner: sweet.name,
-          rounds: roundChoices
-        };
-        tg.sendData(JSON.stringify(gameResult));
-      }
-    }
+  document.getElementById("winner-name").textContent =
+    sweet.name;
+
+  showScreen("winner-screen");
+
+  if (tg && tg.HapticFeedback) {
+    tg.HapticFeedback.notificationOccurred("success");
+  }
+
+  // Сохраняем финальную карточку
+  if (currentGameId) {
+    await apiRequest("/api/game/finish", {
+      game_id: currentGameId,
+      winner: sweet.name
+    });
+  }
+}
 
     document.getElementById("start-battle").addEventListener("click", startBattle);
     document.getElementById("sweet-0").addEventListener("click", () => pick(0));
@@ -414,10 +456,12 @@ async function startBattle() {
     document.getElementById("play-again").addEventListener("click", startBattle);
     document.getElementById("back-to-menu").addEventListener("click", () => showScreen("menu-screen"));
 
-    if (tg) {
-      tg.ready();
-      tg.expand();
-    }
+if (tg) {
+  tg.ready();
+  tg.expand();
+
+  registerMiniAppOpen();
+}
   </script>
 </body>
 </html>
